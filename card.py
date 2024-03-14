@@ -23,7 +23,25 @@ class Card:
     def show_suit(self):
         return str(self._suit)
 
-
+    def __eq__(self, other):
+        # two cards are equal if they have the same value
+        return self._rank == other.show_rank()
+    
+    def __ne__(self, other):
+        # two cards are equal if they have the same value
+        return self._rank != other.show_rank()
+    
+    def __lt__(self, other):
+        return self.valid_ranks.index(self._rank) < self.valid_ranks.index(other._rank)
+    
+    def __gt__(self,other):
+        return self.valid_ranks.index(self._rank) > self.valid_ranks.index(other._rank)
+    
+    def __le__(self,other):
+        return self.valid_ranks.index(self._rank) <= self.valid_ranks.index(other._rank)
+    
+    def __ge__(self,other):
+        return self.valid_ranks.index(self._rank) >= self.valid_ranks.index(other._rank)
 
 # example card usage
 # card = Card(2,'H')
