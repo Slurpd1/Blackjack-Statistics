@@ -21,3 +21,5 @@ class Shoe:
 
     def deal_card(self):
         self._shoe.pop()
+
+
