@@ -5,6 +5,9 @@ class Card:
 
     def __str__(self):
         return str(self._rank)+ str(self._suit)
+    
+    def show_rank(self):
+        return str(self._rank)
 
 
 # example card usage
