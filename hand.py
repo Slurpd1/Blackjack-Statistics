@@ -12,6 +12,9 @@ class Hand:
             return str(self._hand[0].show_rank())
         else:
             return "No cards in hand"
+        
+    def display_hand(self):
+        return [str(card) for card in self._hand]
     
     def total_value(self):
         total = 0
