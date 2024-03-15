@@ -20,6 +20,7 @@ class Shoe:
         random.shuffle(self._shoe)
 
     def deal_card(self):
-        self._shoe.pop()
+        card = self._shoe.pop()
+        return card
 
 
