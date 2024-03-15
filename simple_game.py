@@ -34,6 +34,7 @@ def game():
 def basic_theory(player_hand, dealer_upcard):
     # player_hand must be a hand object and dealer upcard must a number from 1-10 or A , J,K,Q
     # will we include splitting?
+    pass
 
 if __name__ == "__main__":
     game()
