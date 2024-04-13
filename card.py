@@ -53,7 +53,7 @@ class Card:
         
         if other._rank in ['J','Q','K']:
             other_rank_value = 10
-        elif other._rank is 'A':
+        elif other._rank == 'A':
             other_rank_value = 11
         else:
             other_rank_value = int(other._rank)
