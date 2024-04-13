@@ -42,6 +42,23 @@ class Card:
     
     def __ge__(self,other):
         return self.valid_ranks.index(self._rank) >= self.valid_ranks.index(other._rank)
+    
+    def __add__(self,other):
+        if self._rank in ['J','Q','K']:
+            my_rank_value = 10
+        elif self._rank is 'A':
+            my_rank_value = 11
+        else:
+            my_rank_value = int(self._rank)
+        
+        if other._rank in ['J','Q','K']:
+            other_rank_value = 10
+        elif other._rank is 'A':
+            other_rank_value = 11
+        else:
+            other_rank_value = int(other._rank)
+        
+        return  int(my_rank_value + other._rank)
 
 # example card usage
 # card = Card(2,'H')
