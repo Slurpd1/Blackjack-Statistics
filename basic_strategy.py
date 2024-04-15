@@ -1,7 +1,15 @@
-class BasicStrategy:
-    def __init__(self, my_hand, dealer_upcard):
-        self._my_hand_total = my_hand
-        self._dealer_upcard = dealer_upcard
-
-    def is_my_total_soft(self):
-        pass
+def basicStrategy():
+# dh      2,   3,   4,   5,   6,   7,   8,   9   10,  A
+    hard_basicStrategy = [
+        ['H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H'], #5-7
+        ['H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H'], #8
+        ['H', 'D', 'D', 'D', 'D', 'H', 'H', 'H', 'H', 'H'], #9
+        ['D', 'D', 'D', 'D', 'D', 'H', 'D', 'D', 'H', 'H'], #10
+        ['D', 'D', 'D', 'D', 'D', 'D', 'D', 'D', 'D', 'D'], #11
+        ['H', 'H', 'S', 'S', 'S', 'H', 'H', 'H', 'H', 'H'], #12 
+        ['S', 'S', 'S', 'S', 'S', 'H', 'H', 'H', 'H', 'H'], #13
+        ['S', 'S', 'S', 'S', 'S', 'H', 'H', 'H', 'H', 'H'], #14
+        ['S', 'S', 'S', 'S', 'S', 'H', 'H', 'H', 'H', 'H'], #15
+        ['S', 'S', 'S', 'S', 'S', 'H', 'H', 'H', 'H', 'H'], #16 
+        ['S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S'], #17+
+        ]   
