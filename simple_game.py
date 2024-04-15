@@ -1,6 +1,7 @@
 from shoe import *
 from card import *
 from hand import *
+from basic_strategy import *
 
 # there is a dealer, player, and shoe
 
@@ -25,16 +26,15 @@ def game():
     print(player.display_hand())
     print(player.total_value())
 
+    basic_strategy = BasicStrategy()
+
     # this is where the function will come in that decides what to play
 
     # while decision != stand:
     #   pass total and dealer uphand to function
     #   total must have an H or S in front of it
     
-def basic_theory(player_hand, dealer_upcard):
-    # player_hand must be a hand object and dealer upcard must a number from 1-10 or A , J,K,Q
-    # will we include splitting?
-    pass
+
 
 if __name__ == "__main__":
     game()
