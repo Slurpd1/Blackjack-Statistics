@@ -4,6 +4,9 @@ class Hand:
             hand = []  # Initialize an empty list if no hand is provided
         self._hand = hand
 
+    def clear(self):
+        self._hand = []
+        
     def add_card(self, card):
         self._hand.append(card)
 
@@ -61,6 +64,9 @@ class PlayerHand:
 
     def add_card(self, card, hand_index=0):
         self.hands[hand_index].append(card)
+
+    def clear(self):
+        self._hand = []
         
 
     def display_hand(self, hand_index=0):
