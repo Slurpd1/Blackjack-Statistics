@@ -1,16 +1,37 @@
-class BasicStrategy:
-    def __init__(self, my_hand, dealer_upcard):
-        self._my_hand_total = my_hand
-        self._dealer_upcard = dealer_upcard
-
-    def is_my_total_soft(self):
-        self._my_hand_total
-
-    def is_dealer_upcard_ace(self):
-        if self.dealer_upcard.show_card() == 'A':
-            return True
-        return False   
-
-    def basic_strategy(self):
-        # if hand is hard total (i.e. no ace)
-        pass
+def basicStrategy():
+# dh      2,   3,   4,   5,   6,   7,   8,   9   10,  A
+    hard_basicStrategy = [
+        ['H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H', 'H'], #4-8
+        ['H', 'DH', 'DH', 'DH', 'DH', 'H', 'H', 'H', 'H', 'H'], #9
+        ['DH', 'DH', 'DH', 'DH', 'DH', 'DH', 'DH', 'DH', 'H', 'H'], #10
+        ['DH', 'DH', 'DH', 'DH', 'DH', 'DH', 'DH', 'DH', 'DH', 'H'], #11
+        ['H', 'H', 'S', 'S', 'S', 'H', 'H', 'H', 'H', 'H'], #12
+        ['s', 's', 'S', 'S', 'S', 'H', 'H', 'H', 'H', 'H'], #13 
+        ['S', 'S', 'S', 'S', 'S', 'H', 'H', 'H', 'H', 'H'], #14
+        ['S', 'S', 'S', 'S', 'S', 'H', 'H', 'H', 'H', 'H'], #15
+        ['S', 'S', 'S', 'S', 'S', 'H', 'H', 'H', 'H', 'H'], #16
+        ['S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S'], #17+ 
+        ]   
+# dh      2,   3,   4,   5,   6,   7,   8,   9   10,  A
+    soft_basicStrategy = [
+        ['H', 'H', 'H', 'DH', 'DH', 'H', 'H', 'H', 'H', 'H'], #13
+        ['H', 'H', 'H', 'DH', 'DH', 'H', 'H', 'H', 'H', 'H'], #14
+        ['H', 'H', 'DH', 'DH', 'DH', 'H', 'H', 'H', 'H', 'H'], #15
+        ['H', 'H', 'DH', 'DH', 'DH', 'H', 'H', 'H', 'H', 'H'], #16
+        ['H', 'DH', 'DH', 'DH', 'DH', 'H', 'H', 'H', 'H', 'H'], #17
+        ['S', 'DS', 'DS', 'DS', 'DS', 'S', 'S', 'H', 'H', 'H'], #18
+        ['S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S', 'S'], #19+
+        ]   
+    
+# dh      2,   3,   4,   5,   6,   7,   8,   9   10,  A
+    splits = [
+        ['PH','PH','P','P','P','P','H','H','H','H']#2,2
+        ['PH','PH','P','P','P','P','H','H','H','H']#3,3
+        ['H','H','H','PH','PH','H','H','H','H','H']#4,4
+        ['DH','DH','DH','DH','DH','DH','DH','DH','H','H']#5,5
+        ['PH','P','P','P','P','H','H','H','H','H']#6,6
+        ['P','P','P','P','P','P','H','H','H','H']#7,7
+        ['P','P','P','P','P','P','P','P','P','P']#8,8
+        ['P','P','P','P','P','S','P','P','S','S']#9,9
+        ['P','P','P','P','P','P','P','P','P','P']#A,A
+    ]
