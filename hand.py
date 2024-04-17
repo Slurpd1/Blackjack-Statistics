@@ -52,6 +52,15 @@ class PlayerHand:
     def __init__(self):
         self.hands = [[]]  # Initialize with a single hand
 
+    def is_hard(self):
+        pass
+
+    def is_soft(self):
+        pass
+
+    def can_split(self):
+        pass
+
     def split(self):
         # Check if splitting is allowed (e.g., same rank cards) and if there's room for more splits
         if len(self.hands) < 4:
