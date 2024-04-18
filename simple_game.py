@@ -11,6 +11,12 @@ def deal_initial_cards(player, dealer, shoe):
 
 def player_decision(player, dealer, shoe):
     """Handle player's decision-making."""
+
+    # currently no option to split. Split should be made here
+    # if player hand is splittable:
+    if player.can_split():
+        print('this is a splittable hand')
+
     decision = input(f"Dealer: {dealer.show_upcard()}\nYour hand: {', '.join(player.display_hand())}\nYour total: {player.total_value()}\nHit (H), Stand(S), or Double Down(D)? ")
 
     while decision.upper() == 'H' and player.total_value() < 21:

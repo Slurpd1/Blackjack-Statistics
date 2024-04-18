@@ -25,7 +25,14 @@ class Card:
 
     def __eq__(self, other):
         # two cards are equal if they have the same value
-        return self._rank == other.show_rank()
+        # no nvm cus the 10s are all rqual
+        ten = ['10','J','Q','K']
+        if self._rank in ten and other.show_rank() in ten:
+            return True
+        else:
+            if self._rank == other._rank:
+                return True
+        return False
     
     def __ne__(self, other):
         # two cards are equal if they have the same value

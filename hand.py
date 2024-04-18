@@ -59,16 +59,9 @@ class PlayerHand:
         pass
 
     def can_split(self):
-        pass
-
-    def split(self):
-        # Check if splitting is allowed (e.g., same rank cards) and if there's room for more splits
-        if len(self.hands) < 4:
-            for hand in self.hands:
-                if len(hand) == 2 and hand[0].show_rank() == hand[1].show_rank():
-                    # Split the hand into two separate hands
-                    self.hands.append([hand.pop()])
-                    return True
+        for hand in self.hands:
+            if (len(hand) == 2) and (hand[0].show_rank == hand[1].show_rank):
+                return True
         return False
 
     def add_card(self, card, hand_index=0):
