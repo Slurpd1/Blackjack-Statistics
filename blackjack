@@ -42,11 +42,10 @@ def player_decision(player,dealer,shoe):
     return decision
 
 def initialHandType(playerHand):
-    hand = playerHand.hands[0]
-    if hand[0] == hand[1]:
+    if playerHand.can_split:
         # both hands are equal suit, they are under the split category
         return 'split'
-    if (hand[0].show_rank() or hand[1].show_rank()) == 'A':
+    if any(card.show_rank() == 'A' for card in hand):
         return 'soft'
     return 'hard'
 
