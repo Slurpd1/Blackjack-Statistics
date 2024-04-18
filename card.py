@@ -27,7 +27,7 @@ class Card:
         # two cards are equal if they have the same value
         # no nvm cus the 10s are all rqual
         ten = ['10','J','Q','K']
-        if self._rank in ten and other.show_rank() in ten:
+        if self._rank in ten and other._rank in ten:
             return True
         else:
             if self._rank == other._rank:
@@ -53,7 +53,7 @@ class Card:
     def __add__(self,other):
         if self._rank in ['J','Q','K']:
             my_rank_value = 10
-        elif self._rank is 'A':
+        elif self._rank == 'A':
             my_rank_value = 11
         else:
             my_rank_value = int(self._rank)

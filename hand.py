@@ -60,7 +60,7 @@ class PlayerHand:
 
     def can_split(self):
         for hand in self.hands:
-            if (len(hand) == 2) and (hand[0].show_rank == hand[1].show_rank):
+            if (hand[0] == hand[1]) and (len(hand) == 2):
                 return True
         return False
 
