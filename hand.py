@@ -99,3 +99,6 @@ class PlayerHand:
 
     def is_bust(self, hand_index=0):
         return self.total_value(hand_index) > 21
+    
+    def clear(self):
+        self.hands = [[]]

@@ -43,7 +43,7 @@ def determine_outcome(player, dealer, blackjack):
     """Determine the outcome of the game."""
     if blackjack:
         print(f'\nDealer has: {", ".join(dealer.display_hand())}, Total: {dealer.total_value()}\nYou have: {", ".join(player.display_hand())}, Total: {player.total_value()}\nBlackjack! You win!')
-    elif player.total_value() > 21 or (dealer.total_value() > player.total_value()) or dealer.total_value() == 21:
+    elif player.total_value() > 21 or dealer.total_value() <= 21 and dealer.total_value() > player.total_value():
         print(f'\nDealer has: {", ".join(dealer.display_hand())}, Total: {dealer.total_value()}\nYou have: {", ".join(player.display_hand())}, Total: {player.total_value()}\nYou lose!')
     elif player.total_value() == dealer.total_value():
         print(f'\nDealer has: {", ".join(dealer.display_hand())}, Total: {dealer.total_value()}\nYou have: {", ".join(player.display_hand())}, Total: {player.total_value()}\nPush!')
@@ -53,11 +53,13 @@ def determine_outcome(player, dealer, blackjack):
 def play_blackjack():
     """Main function to play blackjack."""
     dealer = Hand()
-    player = Hand()
+    player = PlayerHand()
     shoe = Shoe(4)  # Playing with 4 decks
     shoe.shuffle()
 
     while True:
+        # shoe refill
+
         # Deal initial cards
         deal_initial_cards(player, dealer, shoe)
 
