@@ -1,6 +1,7 @@
 from shoe import Shoe
 from hand import *
 from card import Card
+from basic_strategy import *
 
 def blackjack_statistics(shoe_size=4):
 
@@ -9,22 +10,48 @@ def blackjack_statistics(shoe_size=4):
     shoe = Shoe(shoe_size)
     shoe.shuffle()
 
-    for _ in range(1000):
+    for i in range(500):
+        # each time this loop completes a game has been played
         # first check if shoe is less than 50% full
         if shoe.amount_left() < 50:
             shoe = Shoe()
+        
+        deal_initial_cards(player, dealer, shoe)
+        # now everyone has their initial cards
 
-        card = shoe.deal_card()
-        print(card)
-        print (shoe.amount_left())
+        # now the player must decide what to do with the cards he has dealt vs the dealer
+        decision = player_decision(player,dealer,shoe)
+
+        print(decision)
+
+
+
 
 
 
 def deal_initial_cards(player, dealer, shoe):
     """Deal initial cards to the player and dealer."""
-    for _ in range(1000):
+    for _ in range(2):
         player.add_card(shoe.deal_card())
         dealer.add_card(shoe.deal_card())
+
+def player_decision(player,dealer,shoe):
+    handType = initialHandType(player)
+    # this will return the type of hand we have, soft hard or split
+    decision = basicStrategy(handType, player, dealer.show_upcard())
+    return decision
+
+def initialHandType(playerHand):
+    hand = playerHand.hands[0]
+    if hand[0] == hand[1]:
+        # both hands are equal suit, they are under the split category
+        return 'split'
+    if (hand[0].show_rank() or hand[1].show_rank()) == 'A':
+        return 'soft'
+    return 'hard'
+
+
+
 
 if __name__=='__main__':
     blackjack_statistics()
