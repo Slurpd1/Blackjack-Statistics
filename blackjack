@@ -1,0 +1,30 @@
+from shoe import Shoe
+from hand import *
+from card import Card
+
+def blackjack_statistics(shoe_size=4):
+
+    dealer = Hand()
+    player = PlayerHand()
+    shoe = Shoe(shoe_size)
+    shoe.shuffle()
+
+    for _ in range(1000):
+        # first check if shoe is less than 50% full
+        if shoe.amount_left() < 50:
+            shoe = Shoe()
+
+        card = shoe.deal_card()
+        print(card)
+        print (shoe.amount_left())
+
+
+
+def deal_initial_cards(player, dealer, shoe):
+    """Deal initial cards to the player and dealer."""
+    for _ in range(1000):
+        player.add_card(shoe.deal_card())
+        dealer.add_card(shoe.deal_card())
+
+if __name__=='__main__':
+    blackjack_statistics()
