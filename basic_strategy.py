@@ -40,10 +40,13 @@ def basicStrategy(handType, playerHand, dealerTotal):
     row = get_row(handType, playerHand)
 
     if handType == 'hard':
+        print('hard')
         return hard_basicStrategy[row][col]
     elif handType == 'soft':
+        print('soft')
         return soft_basicStrategy[row][col]
     else:
+        print('split')
         return splits[row][col]
         
 
@@ -90,25 +93,25 @@ def get_row(handType, playerHand):
         if playerHand.total_value() >= 17:
             row = 9
     elif handType == 'split':
-        if playerHand[0][0].show_rank == '2':
+        if playerHand.hands[0][0].show_rank == '2':
             row = 0
-        if playerHand[0][0].show_rank == '3':
+        if playerHand.hands[0][0].show_rank == '3':
             row = 1
-        if playerHand[0][0].show_rank == '4':
+        if playerHand.hands[0][0].show_rank == '4':
             row = 2
-        if playerHand[0][0].show_rank == '5':
+        if playerHand.hands[0][0].show_rank == '5':
             row = 3
-        if playerHand[0][0].show_rank == '6':
+        if playerHand.hands[0][0].show_rank == '6':
             row = 4
-        if playerHand[0][0].show_rank == '7':
+        if playerHand.hands[0][0].show_rank == '7':
             row = 5
-        if playerHand[0][0].show_rank == '8':
+        if playerHand.hands[0][0].show_rank == '8':
             row = 6
-        if playerHand[0][0].show_rank == '9':
+        if playerHand.hands[0][0].show_rank == '9':
             row = 7
-        if playerHand[0][0].show_rank == '10':
+        if playerHand.hands[0][0].show_rank == '10':
             row = 8
-        if playerHand[0][0].show_rank == 'A':
+        if playerHand.hands[0][0].show_rank == 'A':
             row = 9
     return row
     

@@ -55,8 +55,13 @@ class PlayerHand:
     def is_hard(self):
         pass
 
-    def is_soft(self):
-        pass
+    def is_soft(self, index= 0):
+        hand = self.hands[index]
+        card1 = hand[0]
+        card2 = hand[1]
+        if card1.show_rank().upper() == 'A' or card2.show_rank().upper() == 'A':
+            return True
+        return False
 
     def can_split(self):
         for hand in self.hands:

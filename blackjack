@@ -24,6 +24,10 @@ def blackjack_statistics(shoe_size=4):
 
         print(decision)
 
+        player.clear()
+        dealer.clear()
+
+
 
 
 
@@ -42,11 +46,12 @@ def player_decision(player,dealer,shoe):
     return decision
 
 def initialHandType(playerHand):
-    if playerHand.can_split:
+    if playerHand.can_split():
         # both hands are equal suit, they are under the split category
         return 'split'
-    if any(card.show_rank() == 'A' for card in hand):
+    elif playerHand.is_soft():
         return 'soft'
+    playerHand.display_hand()
     return 'hard'
 
 
