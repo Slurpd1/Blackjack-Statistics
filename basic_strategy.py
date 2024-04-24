@@ -111,25 +111,26 @@ def get_row(handType, playerHand):
         if playerHand.total_value() >= 17:
             row = 9
     elif handType == 'split':
-        if playerHand.hands[0][0].show_rank == '2':
+        split_rank = playerHand.hands[0][0].show_rank()
+        if split_rank == '2':
             row = 0
-        if playerHand.hands[0][0].show_rank == '3':
+        if split_rank == '3':
             row = 1
-        if playerHand.hands[0][0].show_rank == '4':
+        if split_rank == '4':
             row = 2
-        if playerHand.hands[0][0].show_rank == '5':
+        if split_rank == '5':
             row = 3
-        if playerHand.hands[0][0].show_rank == '6':
+        if split_rank == '6':
             row = 4
-        if playerHand.hands[0][0].show_rank == '7':
+        if split_rank == '7':
             row = 5
-        if playerHand.hands[0][0].show_rank == '8':
+        if split_rank == '8':
             row = 6
-        if playerHand.hands[0][0].show_rank == '9':
+        if split_rank == '9':
             row = 7
-        if playerHand.hands[0][0].show_rank == '10' or playerHand.hands[0][0].show_rank().upper() == 'J' or playerHand.hands[0][0].show_rank().upper() == 'Q' or playerHand.hands[0][0].show_rank().upper() == 'K':
+        if split_rank == '10' or split_rank == 'J' or split_rank == 'Q' or split_rank == 'K':
             row = 8
-        if playerHand.hands[0][0].show_rank == 'A':
+        if split_rank == 'A':
             row = 9
     return row
 
