@@ -10,7 +10,7 @@ def blackjack_statistics(shoe_size=4):
     shoe = Shoe(shoe_size)
     shoe.shuffle()
 
-    for i in range(500):
+    for i in range(1000):
         # each time this loop completes a game has been played
         # first check if shoe is less than 50% full
         if shoe.amount_left() < 50:
@@ -22,6 +22,7 @@ def blackjack_statistics(shoe_size=4):
         # now the player must decide what to do with the cards he has dealt vs the dealer
         decision = player_decision(player,dealer,shoe)
 
+        print(player.display_hand(), dealer.show_upcard())
         print(decision)
 
         player.clear()

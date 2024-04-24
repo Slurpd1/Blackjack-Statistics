@@ -73,7 +73,6 @@ def get_col(dealerTotal):
 
 def get_row(handType, playerHand):
     if handType == 'soft':
-        print(f"soft value 13 > 19 {playerHand.total_value()}")
         if playerHand.total_value() == 13:
             row = 0
         if playerHand.total_value() == 14:
@@ -89,7 +88,6 @@ def get_row(handType, playerHand):
         if playerHand.total_value() >= 19:
             row = 6
     elif handType == 'hard':
-        print(f"hard value 8 > 17 {playerHand.total_value()}")
         if playerHand.total_value() <= 8:
             row = 0
         if playerHand.total_value() == 9:
