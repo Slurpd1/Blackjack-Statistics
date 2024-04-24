@@ -40,23 +40,40 @@ def basicStrategy(handType, playerHand, dealerTotal):
     row = get_row(handType, playerHand)
 
     if handType == 'hard':
-        print('hard')
         return hard_basicStrategy[row][col]
     elif handType == 'soft':
-        print('soft')
         return soft_basicStrategy[row][col]
     else:
-        print('split')
         return splits[row][col]
         
 
 
 def get_col(dealerTotal):
-    col_map = {'2': 0, '3': 1, '4': 2, '5': 3, '6': 4, '7': 5, '8': 6, '9': 7, '10': 8, 'A': 9}
-    return col_map.get(str(dealerTotal), None)
+    if dealerTotal == '2':
+        col = 0
+    elif dealerTotal == '3':
+        col = 1
+    elif dealerTotal == '4':
+        col = 2
+    elif dealerTotal == '5':
+        col = 3
+    elif dealerTotal == '6':
+        col = 4
+    elif dealerTotal == '7':
+        col = 5
+    elif dealerTotal == '8':
+        col = 6
+    elif dealerTotal == '9':
+        col = 7
+    elif dealerTotal == '10' or dealerTotal == 'J' or dealerTotal == 'Q' or dealerTotal == 'K':
+        col = 8
+    elif dealerTotal == 'A':
+        col = 9
+    return col
 
 def get_row(handType, playerHand):
     if handType == 'soft':
+        print(f"soft value 13 > 19 {playerHand.total_value()}")
         if playerHand.total_value() == 13:
             row = 0
         if playerHand.total_value() == 14:
@@ -72,6 +89,7 @@ def get_row(handType, playerHand):
         if playerHand.total_value() >= 19:
             row = 6
     elif handType == 'hard':
+        print(f"hard value 8 > 17 {playerHand.total_value()}")
         if playerHand.total_value() <= 8:
             row = 0
         if playerHand.total_value() == 9:
@@ -109,11 +127,10 @@ def get_row(handType, playerHand):
             row = 6
         if playerHand.hands[0][0].show_rank == '9':
             row = 7
-        if playerHand.hands[0][0].show_rank == '10':
+        if playerHand.hands[0][0].show_rank == '10' or playerHand.hands[0][0].show_rank().upper() == 'J' or playerHand.hands[0][0].show_rank().upper() == 'Q' or playerHand.hands[0][0].show_rank().upper() == 'K':
             row = 8
         if playerHand.hands[0][0].show_rank == 'A':
             row = 9
     return row
-    
-    return row_maps.get(handType, {}).get(total_value, None)
+
 
