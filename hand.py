@@ -50,12 +50,9 @@ class Hand:
 
 class PlayerHand:
     def __init__(self):
-        self.hands = [[]]  # Initialize with a single hand
+        self.hands = [[]]  # Initialize with a single empty hand
 
-    def is_hard(self):
-        pass
-
-    def is_soft(self, index= 0):
+    def is_soft(self, index=0):
         hand = self.hands[index]
         card1 = hand[0]
         card2 = hand[1]

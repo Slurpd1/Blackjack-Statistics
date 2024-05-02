@@ -16,11 +16,14 @@ def blackjack_statistics(shoe_size=4):
         if shoe.amount_left() < 50:
             shoe = Shoe()
         
+        # decision set to nothing
+        decision = ''
+
         deal_initial_cards(player, dealer, shoe)
         # now everyone has their initial cards
 
         # now the player must decide what to do with the cards he has dealt vs the dealer
-        decision = player_decision(player,dealer,shoe)
+
 
         print(player.display_hand(), dealer.show_upcard())
         print(decision)
