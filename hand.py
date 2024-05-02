@@ -6,7 +6,14 @@ class Hand:
 
     def clear(self):
         self._hand = []
-        
+
+    def dealer_turn(self, card):
+        while self.total_value() < 17:
+            self.add_card(card)
+            if self.total_value() > 21:
+                return
+        return
+    
     def add_card(self, card):
         self._hand.append(card)
 
@@ -51,6 +58,17 @@ class Hand:
 class PlayerHand:
     def __init__(self):
         self.hands = [[]]  # Initialize with a single empty hand
+
+    def execute_split(self, shoe, index):
+        if not self.can_split():
+            return TypeError
+        self.hands.append([])
+        original_hand = self.hands[index]
+        split_card = original_hand.pop()
+        original_hand.append(shoe.deal_card())
+        self.hands[index+1].extend([split_card, shoe.deal_card()])
+
+
 
     def is_soft(self, index=0):
         hand = self.hands[index]
@@ -106,3 +124,5 @@ class PlayerHand:
     
     def clear(self):
         self.hands = [[]]
+
+

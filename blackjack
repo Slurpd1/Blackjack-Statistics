@@ -13,29 +13,47 @@ def blackjack_statistics(shoe_size=4):
     for i in range(1000):
         # each time this loop completes a game has been played
         # first check if shoe is less than 50% full
+        print('------------------------------------')
+        print(f'Hand #{i+1}')
         if shoe.amount_left() < 50:
+            print('The shoe is less than 50 full. Re-shuffling the deck.')
             shoe = Shoe()
-        
-        # decision set to nothing
-        decision = ''
+            shoe.shuffle()
 
         deal_initial_cards(player, dealer, shoe)
         # now everyone has their initial cards
+        print("Dealing initial cards...")
+        print("Player's hand:", player.display_hand())
+        print("Dealer's upcard:", dealer.show_upcard())
 
         # now the player must decide what to do with the cards he has dealt vs the dealer
+        print("Generating a Decision")
 
+        decision = player_decision(player,dealer,shoe)
 
-        print(player.display_hand(), dealer.show_upcard())
-        print(decision)
+        print("Player decision:", decision)
+
+        execute_decision(player,decision,shoe, dealer, 0)
+
+        dealer.dealer_turn(shoe.deal_card())
+        if dealer.total_value() > 21:
+            print("Player wins! Congratulations")
+        else:
+            evaluate_winner(player, dealer)
+
 
         player.clear()
         dealer.clear()
 
+def evaluate_winner(player, dealer):
+    if player.total_value() > dealer.total_value():
+        print(f'Player Wins! {player.display_hand(), dealer.display_hand()}')
 
-
-
-
-
+        return
+    else:
+        print('dealer wins!')
+        print(f'Player Wins! {player.display_hand(), dealer.display_hand()}')
+        return
 
 def deal_initial_cards(player, dealer, shoe):
     """Deal initial cards to the player and dealer."""
@@ -58,6 +76,33 @@ def initialHandType(playerHand):
     playerHand.display_hand()
     return 'hard'
 
+def execute_decision(playerHand, decision, shoe, dealer, index=0):
+    if len(decision) == 1:
+        if len(playerHand.hands) == 1:
+            # no splits here
+            if decision == 'S':
+                return
+        
+            elif decision == 'H':
+                playerHand.add_card(shoe.deal_card())
+                if playerHand.total_value() > 21:
+                    return
+                decision = player_decision(playerHand, dealer, shoe)
+                execute_decision(playerHand, decision, shoe, dealer, index + 1)
+            
+            elif decision == 'P':
+                playerHand.execute_split(shoe, index)
+                decision = player_decision(playerHand, dealer, shoe)
+                execute_decision(playerHand, decision, shoe, dealer, index + 1)
+            
+            elif decision == 'D':
+                playerHand.add_card(shoe.deal_card(), index)
+                return
+            return
+    if len(decision) == '2':
+        if decision[0] == 'D':
+            # check which turn it is
+            pass            
 
 
 
