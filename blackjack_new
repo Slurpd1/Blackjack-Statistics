@@ -30,25 +30,48 @@ def blackjack(iterations=100, shoe_size=4):
         deal_initial_cards(player,dealer,shoe)
 
         # now the hands have been dealt and the player must make a decision. using a while loop as the player can make multiple decisions in one turn
-        while True:
+        while decision != 'S':
             decision = player_decision(player,dealer,shoe) # the code up to this line has been tested to 100 000 iterations. working ok
             execute_decision(player,dealer,decision,shoe)
             # now that we have a player decision we must process this
+        
+        # now that we have exited the loop the player has either busted or is staying on their hands.
+
+        
 
 def execute_decision(player,dealer,decision,shoe):
     if decision == 'S':
-        # the easiest decision to deal with is going to be a stand
-        print('standing')
         return
     
     if decision == 'H':
-        print('hitting')
+        # if the player decides to hit, then they should be dealt a card.
+        player.add_card(shoe.deal_card())
         
     if decision == 'P':
         print('splitting')
     if len(decision) == 2:
         print('doubling')
-        
+
+def dealer_turn(dealer,shoe):
+    '''
+    Used as a helper function inside of the blackjack function. This function is used after the players turn has concluded. The dealer will countinue to add cards to their
+    deck until the total is greater than or equal to 17, or the dealer busts.
+    Takes the dealers hand as a parameter and the shoe the game is being played with.
+    Returns one of two values, dbust and dstay
+    dbust means the dealer has busted. the player wins the hand
+    dstay means the dealer has stayed on their hand. The dealer and player hand now has to go to a final evaluation.
+    '''
+
+    while dealer.total_value() < 17:
+        dealer.add_card(shoe.deal_card())
+
+    # now we have exited. If the dealer value is over 21 then the dealer has busted
+    if dealer.total_value() > 21:
+        return 'dbust'
+    # otherwise, the dealer value is between 17 and 21. dealer is staying
+    return 'dstay'
+
+
 
 def debug_print_initial():
     '''
