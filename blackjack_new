@@ -56,8 +56,16 @@ def check_blackjack(player,dealer):
     deal is an instant win.
     Takes the player and dealer hand as parameters, returns pwin to represent  an instant player win
     dwin is is used to represent a dealer win. If there is no return then there is no blackjack and
+    the game can countinue as normal. 
     '''
     if player.total_value() == 21:
+        if dealer.total_value() == 21:
+            return 'push'
+        return 'pwin'
+    if dealer.total_value() ==  21:
+        return 'dwin'
+    return
+
 
 def debug_print_initial():
     '''
