@@ -58,15 +58,26 @@ class Hand:
 class PlayerHand:
     def __init__(self):
         self.hands = [[]]  # Initialize with a single empty hand
+        self.num_of_splits = 0
 
     def execute_split(self, shoe, index=0):
         if not self.can_split():
-            return TypeError
+            print("Cannot split again.")
+            return
+
+        # Add a new hand
         self.hands.append([])
-        original_hand = self.hands[index]
-        split_card = original_hand.pop()
-        original_hand.append(shoe.deal_card())
-        self.hands[index+1].extend([split_card, shoe.deal_card()])
+
+        # Move one card from the original hand to the new hand
+        split_card = self.hands[index].pop()
+        self.hands[index+1].append(split_card)
+
+        # Deal an additional card to each hand from the shoe
+        self.hands[index].append(shoe.deal_card())
+        self.hands[index+1].append(shoe.deal_card())
+
+        # Increment the number of splits made
+        self.num_of_splits += 1
 
 
 
@@ -79,10 +90,7 @@ class PlayerHand:
         return False
 
     def can_split(self):
-        for hand in self.hands:
-            if (hand[0] == hand[1]) and (len(hand) == 2):
-                return True
-        return False
+        return self.num_of_splits < 1 and self.hands[0][0].show_rank() == self.hands[0][1].show_rank()
 
     def add_card(self, card, hand_index=0):
         self.hands[hand_index].append(card)

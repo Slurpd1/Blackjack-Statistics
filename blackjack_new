@@ -39,14 +39,45 @@ def blackjack(iterations=100, shoe_size=4):
             continue
 
 
-        decision = player_decision(player,dealer,shoe)
-        # now the hands have been dealt, there are no initial blackjacks and the player must make a decision. using a while loop as the player can make multiple decisions in one turn
-        while decision != 'S':
-            decision = player_decision(player,dealer,shoe) # the code up to this line has been tested to 100 000 iterations. working ok
-            execute_decision(player,dealer,decision,shoe)
-            # now that we have a player decision we must process this
-        
-        # now that we have exited the loop the player has either busted or is staying on their hands.
+        # Make decisions for each hand
+        decisions = player_decision(player, dealer, shoe)
+
+        # Play each hand
+        for index, decision in enumerate(decisions):
+            print(f'Hand #{index + 1} Decision:', decision)
+            execute_decision(player, dealer, decision, shoe)
+
+        # Evaluate dealer's turn
+        dealer_turn_result = dealer_turn(dealer, shoe)
+        print("Dealer's turn result:", dealer_turn_result)
+
+        # Now evaluate each hand's outcome
+        for index, hand in enumerate(player.hands):
+            print(f'Outcome for Hand #{index + 1}:')
+            evaluate_hand_outcome(player, dealer)
+
+
+def evaluate_hand_outcome(player, dealer):
+    player_total = player.total_value()
+    dealer_total = dealer.total_value()
+
+    if player_total > 21:
+        print("Player busts!")
+        return 'player_bust'
+
+    if dealer_total > 21:
+        print("Dealer busts!")
+        return 'dealer_bust'
+
+    if player_total > dealer_total:
+        print("Player wins!")
+        return 'player_win'
+    elif player_total < dealer_total:
+        print("Dealer wins!")
+        return 'dealer_win'
+    else:
+        print("It's a tie!")
+        return 'push'
 
         
 
@@ -62,7 +93,7 @@ def execute_decision(player,dealer,decision,shoe):
         
     if decision == 'P':
         print('splitting')
-        player.execute_split()
+        player.execute_split(shoe)
 
 
     if len(decision) == 2:
@@ -136,14 +167,14 @@ def player_decision(player,dealer,shoe):
     shoe - the shoe that cards are being dealt from
     will return a decision, either H,S,D,P : Hit, stand, double, split.
     '''
+    # error is coming from here. the fact that we are iterating through hand in hands is causing bugs. we need to iterate by index
     decisions = []
-    for index, hand in enumerate(player.hands):
-        # Check hand type for each hand
+    for hand in player.hands:
         handType = initialHandType(hand)
-        # Get decision for the current hand
         decision = basicStrategy(handType, hand, dealer.show_upcard())
         decisions.append(decision)
     return decisions
+
 
 def initialHandType(playerHand):
     '''
