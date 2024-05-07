@@ -37,7 +37,7 @@ def blackjack_statistics(shoe_size=4):
 
         dealer.dealer_turn(shoe.deal_card())
         if dealer.total_value() > 21:
-            print("Player wins! Congratulations")
+            print(f'Player Wins! Player total{player.display_hand(), player.total_value()} Dealer total {dealer.display_hand(), dealer.total_value()}')
         else:
             evaluate_winner(player, dealer)
 
@@ -47,12 +47,12 @@ def blackjack_statistics(shoe_size=4):
 
 def evaluate_winner(player, dealer):
     if player.total_value() > dealer.total_value():
-        print(f'Player Wins! {player.display_hand(), dealer.display_hand()}')
+        print(f'Player Wins! Player total{player.display_hand(), player.total_value()} Dealer total {dealer.display_hand(), dealer.total_value()}')
 
         return
     else:
         print('dealer wins!')
-        print(f'Player Wins! {player.display_hand(), dealer.display_hand()}')
+        print(f'Player Wins! Player total{player.display_hand(), player.total_value()} Dealer total {dealer.display_hand(), dealer.total_value()}')
         return
 
 def deal_initial_cards(player, dealer, shoe):
@@ -101,8 +101,8 @@ def execute_decision(playerHand, decision, shoe, dealer, index=0):
             return
     if len(decision) == '2':
         if decision[0] == 'D':
-            # check which turn it is
-            pass            
+            pass
+            return
 
 
 

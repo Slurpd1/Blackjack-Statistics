@@ -1,0 +1,55 @@
+from shoe import Shoe
+from hand import *
+from card import Card
+from basic_strategy import *
+
+def blackjack(iterations=100, shoe_size=4):
+    '''
+    Main function for playing the game of blackjack and aquiring data associated with games.
+    Parameters:
+    iterations - the number of times a game of blackjack will be played.
+    shoe_size - the number of decks that will be used in the shoe
+    '''
+    # shoe must be initalized before the game
+    shoe = Shoe(shoe_size)
+    shoe.shuffle()
+
+    for i in range(iterations):
+        print('----------')
+        print(f'Game #{i+1}.')
+        # initialize dealer hand, player hand
+
+        # this code cannot be made into a function as it needs to affect the shoes variable. must be kept in the main code.
+        if shoe.amount_left() < 50: # checks to see if shoe is less than 50% full.
+            print('The shoe is less than 50 percent full. Re-shuffling the deck.')
+            shoe = Shoe()
+            shoe.shuffle()
+
+        dealer = Hand()
+        player = PlayerHand()
+        deal_initial_cards(player,dealer,shoe)
+
+
+def debug_print_initial():
+    '''
+    This function will be used to debug the inital part of the game. It will ensure everything is set up correctly.
+    '''
+    pass
+    
+def deal_initial_cards(player, dealer, shoe):
+    '''
+    This function is used to deal the initial cards to the players as well as the dealer.
+    Modifies player and dealer by adding two cards.
+    Shoe loses 4 cards.
+    DEBUGGING is included for now. with the use of print statements/
+    '''
+    for _ in range(2):
+        player.add_card(shoe.deal_card()) # by deafult this deals to the first hand in the deck.
+        dealer.add_card(shoe.deal_card())
+    print("Dealing initial cards...")
+    print("Player's hand:", player.display_hand())
+    print("Dealer's upcard:", dealer.show_upcard())
+
+
+if __name__ == '__main__':
+    blackjack(1000,4)
