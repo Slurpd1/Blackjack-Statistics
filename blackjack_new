@@ -29,6 +29,26 @@ def blackjack(iterations=100, shoe_size=4):
         player = PlayerHand()
         deal_initial_cards(player,dealer,shoe)
 
+        # now the hands have been dealt and the player must make a decision. using a while loop as the player can make multiple decisions in one turn
+        while True:
+            decision = player_decision(player,dealer,shoe) # the code up to this line has been tested to 100 000 iterations. working ok
+            execute_decision(player,dealer,decision,shoe)
+            # now that we have a player decision we must process this
+
+def execute_decision(player,dealer,decision,shoe):
+    if decision == 'S':
+        # the easiest decision to deal with is going to be a stand
+        print('standing')
+        return
+    
+    if decision == 'H':
+        print('hitting')
+        
+    if decision == 'P':
+        print('splitting')
+    if len(decision) == 2:
+        print('doubling')
+        
 
 def debug_print_initial():
     '''
@@ -50,6 +70,38 @@ def deal_initial_cards(player, dealer, shoe):
     print("Player's hand:", player.display_hand())
     print("Dealer's upcard:", dealer.show_upcard())
 
+def player_decision(player,dealer,shoe):
+    '''
+    This function will be used to return a decision after the initial deal of cards.
+    Parameters:
+    player - the players hand
+    dealer - the dealers hand
+    shoe - the shoe that cards are being dealt from
+    will return a decision, either H,S,D,P : Hit, stand, double, split.
+    '''
+    handType = initialHandType(player)
+    # this will return the type of hand we have, soft hard or split
+    decision = basicStrategy(handType, player, dealer.show_upcard())
+    return decision
+
+def initialHandType(playerHand):
+    '''
+    Helper function for player decision.
+    The purpose of this function is to return the type of hand the player has. This is required for basic strategy
+    Types of hands
+    Split: If the players two cards are the same then they can be "split" into two different hands. For instance, if the player is dealt two aces,
+    and chooses to split, then the player will now have two hands. each of those hands will have an ace as well as a random card dealt from the shoe.
+    Soft: A soft hand can be one of two values. This is because of blackjacks ace property. Aces are either counter as 1 or 11
+    Hard: Every other type of hand is considered hard.
+    '''
+    if playerHand.can_split():
+        # both hands are equal suit, they are under the split category
+        return 'split'
+    elif playerHand.is_soft():
+        return 'soft'
+    playerHand.display_hand()
+    return 'hard'
+
 
 if __name__ == '__main__':
-    blackjack(1000,4)
+    blackjack(100,4)
