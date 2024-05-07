@@ -29,6 +29,8 @@ def blackjack(iterations=100, shoe_size=4):
         player = PlayerHand()
         deal_initial_cards(player,dealer,shoe)
 
+        # after the initial cards are dealt the player or dealer can have blackjack. this needs to be handled using the
+
         # now the hands have been dealt and the player must make a decision. using a while loop as the player can make multiple decisions in one turn
         while decision != 'S':
             decision = player_decision(player,dealer,shoe) # the code up to this line has been tested to 100 000 iterations. working ok
