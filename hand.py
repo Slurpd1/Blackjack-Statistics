@@ -59,7 +59,7 @@ class PlayerHand:
     def __init__(self):
         self.hands = [[]]  # Initialize with a single empty hand
 
-    def execute_split(self, shoe, index):
+    def execute_split(self, shoe, index=0):
         if not self.can_split():
             return TypeError
         self.hands.append([])

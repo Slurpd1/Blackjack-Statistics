@@ -30,14 +30,25 @@ def blackjack(iterations=100, shoe_size=4):
         deal_initial_cards(player,dealer,shoe)
 
         # after the initial cards are dealt the player or dealer can have blackjack. this needs to be handled using the
+        initial_blackjack = check_blackjack(player,dealer)
+        if initial_blackjack == 'pwin':
+            print('player wins with initial blackjack. Countinuing')
+            continue
+        elif initial_blackjack == 'dwin':
+            print('player wins with initial blackjack. Countinuing')
+            continue
 
-        # now the hands have been dealt and the player must make a decision. using a while loop as the player can make multiple decisions in one turn
+
+        decision = player_decision(player,dealer,shoe)
+        # now the hands have been dealt, there are no initial blackjacks and the player must make a decision. using a while loop as the player can make multiple decisions in one turn
         while decision != 'S':
             decision = player_decision(player,dealer,shoe) # the code up to this line has been tested to 100 000 iterations. working ok
             execute_decision(player,dealer,decision,shoe)
             # now that we have a player decision we must process this
         
         # now that we have exited the loop the player has either busted or is staying on their hands.
+
+        
 
         
 
@@ -51,6 +62,9 @@ def execute_decision(player,dealer,decision,shoe):
         
     if decision == 'P':
         print('splitting')
+        player.execute_split()
+
+
     if len(decision) == 2:
         print('doubling')
 
@@ -65,11 +79,13 @@ def check_blackjack(player,dealer):
     '''
     if player.total_value() == 21:
         if dealer.total_value() == 21:
-            return 'push'
+            return
         return 'pwin'
     if dealer.total_value() ==  21:
         return 'dwin'
     return
+
+
 def dealer_turn(dealer,shoe):
     '''
     Used as a helper function inside of the blackjack function. This function is used after the players turn has concluded. The dealer will countinue to add cards to their
@@ -120,10 +136,14 @@ def player_decision(player,dealer,shoe):
     shoe - the shoe that cards are being dealt from
     will return a decision, either H,S,D,P : Hit, stand, double, split.
     '''
-    handType = initialHandType(player)
-    # this will return the type of hand we have, soft hard or split
-    decision = basicStrategy(handType, player, dealer.show_upcard())
-    return decision
+    decisions = []
+    for index, hand in enumerate(player.hands):
+        # Check hand type for each hand
+        handType = initialHandType(hand)
+        # Get decision for the current hand
+        decision = basicStrategy(handType, hand, dealer.show_upcard())
+        decisions.append(decision)
+    return decisions
 
 def initialHandType(playerHand):
     '''
