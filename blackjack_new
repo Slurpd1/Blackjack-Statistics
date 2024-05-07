@@ -48,7 +48,16 @@ def execute_decision(player,dealer,decision,shoe):
         print('splitting')
     if len(decision) == 2:
         print('doubling')
-        
+
+def check_blackjack(player,dealer):
+    '''
+    This function is used in the main blackjack function. It's purpose is to evaluate wheter the
+    player or dealer have hit blackjack. In the game of blackjack, a card total of 21 off the initial
+    deal is an instant win.
+    Takes the player and dealer hand as parameters, returns pwin to represent  an instant player win
+    dwin is is used to represent a dealer win. If there is no return then there is no blackjack and
+    '''
+    if player.total_value() == 21:
 
 def debug_print_initial():
     '''
