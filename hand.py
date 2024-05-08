@@ -57,7 +57,7 @@ class Hand:
 
 class PlayerHand:
     def __init__(self):
-        self.hands = [[]]  # Initialize with a single empty hand
+        self.hands = [Hand()]  # Initialize with a single empty hand
         self.num_of_splits = 0
 
     def execute_split(self, shoe, index=0):
@@ -82,10 +82,8 @@ class PlayerHand:
 
 
     def is_soft(self, index=0):
-        hand = self.hands[index]
-        card1 = hand[0]
-        card2 = hand[1]
-        if card1.show_rank().upper() == 'A' or card2.show_rank().upper() == 'A':
+        # corrected to work with hand objects
+        if self.hands[index][0].show_rank() == 'A' or self.hands[index][1].show_rank() == 'A':
             return True
         return False
 
@@ -93,44 +91,25 @@ class PlayerHand:
         return self.num_of_splits < 1 and self.hands[0][0].show_rank() == self.hands[0][1].show_rank()
 
     def add_card(self, card, hand_index=0):
-        self.hands[hand_index].append(card)
+        self.hands[hand_index].add_card(card)
 
     def clear(self):
-        self._hand = []
+        self.hands = [Hand()]
         
 
     def display_hand(self, hand_index=0):
         return [str(card) for card in self.hands[hand_index]]
 
-    def total_value(self, hand_index=0):
-        total = 0
-        ace_count = 0
-        for card in self.hands[hand_index]:
-            if card.show_rank() in {'J', 'Q', 'K'}:
-                total += 10
-            elif card.show_rank() == 'A':
-                total += 11
-                ace_count += 1
-            else:
-                total += int(card.show_rank())
+    def total_value(self, index=0):
+        return self.hands[index].total_value()
 
-        # Adjust Ace value to 1 if bust
-        while total > 21 and ace_count > 0:
-            total -= 10
-            ace_count -= 1
-
-        return total
-
-    def remove_card(self, card, hand_index=0):
-        if card in self.hands[hand_index]:
-            self.hands[hand_index].remove(card)
-        else:
-            print("Card not found in hand")
+    def remove_card(self, card,index=0):
+        self.hands[index].remove_card()
 
     def is_bust(self, hand_index=0):
         return self.total_value(hand_index) > 21
     
     def clear(self):
-        self.hands = [[]]
+        self.hands = [Hand()]
 
 
