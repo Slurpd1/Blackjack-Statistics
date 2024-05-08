@@ -1,11 +1,34 @@
+from card import *
+    
 class Hand:
     def __init__(self, hand=None):
         if hand is None:
             hand = []  # Initialize an empty list if no hand is provided
         self._hand = hand
 
+    # Other methods...
+
+    def get_card_at_index(self, index):
+        """
+        Get the card object at the specified index in the hand.
+
+        Args:
+            index (int): The index of the card to retrieve.
+
+        Returns:
+            Card: The card object at the specified index.
+        """
+        if 0 <= index < len(self._hand):
+            return self._hand[index]
+        else:
+            print("Index out of range.")
+            return None
+        
     def clear(self):
         self._hand = []
+
+    def pop(self, index=-1):
+        return self._hand.pop(index)
 
     def dealer_turn(self, card):
         while self.total_value() < 17:
@@ -66,15 +89,15 @@ class PlayerHand:
             return
 
         # Add a new hand
-        self.hands.append([])
+        self.hands.append(Hand())
 
         # Move one card from the original hand to the new hand
         split_card = self.hands[index].pop()
-        self.hands[index+1].append(split_card)
+        self.hands[index+1].add_card(split_card)
 
         # Deal an additional card to each hand from the shoe
-        self.hands[index].append(shoe.deal_card())
-        self.hands[index+1].append(shoe.deal_card())
+        self.hands[index].add_card(shoe.deal_card())
+        self.hands[index+1].add_card(shoe.deal_card())
 
         # Increment the number of splits made
         self.num_of_splits += 1
@@ -83,12 +106,12 @@ class PlayerHand:
 
     def is_soft(self, index=0):
         # corrected to work with hand objects
-        if self.hands[index][0].show_rank() == 'A' or self.hands[index][1].show_rank() == 'A':
+        if self.hands[index].get_card_at_index(0).show_rank() == 'A' or self.hands[index].get_card_at_index(1).show_rank() == 'A':
             return True
         return False
 
     def can_split(self):
-        return self.num_of_splits < 1 and self.hands[0][0].show_rank() == self.hands[0][1].show_rank()
+        return self.num_of_splits < 1 and self.hands[0].get_card_at_index(0).show_rank() == self.hands[0].get_card_at_index(1).show_rank()
 
     def add_card(self, card, hand_index=0):
         self.hands[hand_index].add_card(card)
@@ -97,8 +120,8 @@ class PlayerHand:
         self.hands = [Hand()]
         
 
-    def display_hand(self, hand_index=0):
-        return [str(card) for card in self.hands[hand_index]]
+    def display_hand(self, index=0):
+        return self.hands[index].display_hand()
 
     def total_value(self, index=0):
         return self.hands[index].total_value()
@@ -111,5 +134,3 @@ class PlayerHand:
     
     def clear(self):
         self.hands = [Hand()]
-
-
