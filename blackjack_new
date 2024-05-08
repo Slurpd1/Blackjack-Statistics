@@ -40,12 +40,13 @@ def blackjack(iterations=100, shoe_size=4):
 
 
         # Make decisions for each hand
-        decisions = player_decision(player, dealer, shoe)
+        decision = player_decision(player, dealer, shoe)
 
         # Play each hand
-        for index, decision in enumerate(decisions):
-            print(f'Hand #{index + 1} Decision:', decision)
-            execute_decision(player, dealer, decision, shoe)
+        while decision[0] != 'S':
+
+            execute_decision(player, dealer, decision[0], shoe)
+            decision = player_decision(player, dealer, shoe)
 
         # Evaluate dealer's turn
         dealer_turn_result = dealer_turn(dealer, shoe)
@@ -63,20 +64,25 @@ def evaluate_hand_outcome(player, dealer):
 
     if player_total > 21:
         print("Player busts!")
+        print(f'player hand {player.display_hand(), player.total_value()}, dealer hand {dealer.display_hand(), dealer.total_value()}')
         return 'player_bust'
 
     if dealer_total > 21:
         print("Dealer busts!")
+        print(f'player hand {player.display_hand(), player.total_value()}, dealer hand {dealer.display_hand(), dealer.total_value()}')
         return 'dealer_bust'
 
     if player_total > dealer_total:
         print("Player wins!")
+        print(f'player hand {player.display_hand(), player.total_value()}, dealer hand {dealer.display_hand(), dealer.total_value()}')
         return 'player_win'
     elif player_total < dealer_total:
         print("Dealer wins!")
+        print(f'player hand {player.display_hand(), player.total_value()}, dealer hand {dealer.display_hand(), dealer.total_value()}')
         return 'dealer_win'
     else:
         print("It's a tie!")
+        print(f'player hand {player.display_hand(), player.total_value()}, dealer hand {dealer.display_hand(), dealer.total_value()}')
         return 'push'
 
         
@@ -90,14 +96,16 @@ def execute_decision(player,dealer,decision,shoe):
     if decision == 'H':
         # if the player decides to hit, then they should be dealt a card.
         player.add_card(shoe.deal_card())
+        print(f'Decision: {decision}. Player hand is now {player.display_hand()}')
+        return
         
     if decision == 'P':
         print('splitting')
         player.execute_split(shoe)
 
-
     if len(decision) == 2:
-        print('doubling')
+        #double do not be working
+        execute_decision(player,dealer,decision[1],shoe)
 
 def check_blackjack(player,dealer):
     '''
@@ -169,11 +177,14 @@ def player_decision(player,dealer,shoe):
     '''
     # error is coming from here. the fact that we are iterating through hand in hands is causing bugs. we need to iterate by index
     decisions = []
-    for hand in player.hands:
-        handType = initialHandType(hand)
-        decision = basicStrategy(handType, hand, dealer.show_upcard())
-        decisions.append(decision)
+    if len(player.hands) == 1:
+        handType = initialHandType(player)
+        decision = basicStrategy(handType, player, dealer.show_upcard())
+        decisions.append(decision)  
     return decisions
+    
+        
+
 
 
 def initialHandType(playerHand):
