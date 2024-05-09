@@ -6,7 +6,7 @@ def basicStrategy(handType, playerHand, dealerTotal):
         ['DH', 'DH', 'DH', 'DH', 'DH', 'DH', 'DH', 'DH', 'H', 'H'], #10
         ['DH', 'DH', 'DH', 'DH', 'DH', 'DH', 'DH', 'DH', 'DH', 'H'], #11
         ['H', 'H', 'S', 'S', 'S', 'H', 'H', 'H', 'H', 'H'], #12
-        ['s', 's', 'S', 'S', 'S', 'H', 'H', 'H', 'H', 'H'], #13 
+        ['S', 'S', 'S', 'S', 'S', 'H', 'H', 'H', 'H', 'H'], #13 
         ['S', 'S', 'S', 'S', 'S', 'H', 'H', 'H', 'H', 'H'], #14
         ['S', 'S', 'S', 'S', 'S', 'H', 'H', 'H', 'H', 'H'], #15
         ['S', 'S', 'S', 'S', 'S', 'H', 'H', 'H', 'H', 'H'], #16
@@ -73,6 +73,7 @@ def get_col(dealerTotal):
 
 def get_row(handType, playerHand):
     if handType == 'soft':
+        # small bug here. Hand can sometimes have an ace and still be hard. If the ace can no longer be an 11, the hand is now considered hard
         if playerHand.total_value() == 13:
             row = 0
         if playerHand.total_value() == 14:

@@ -43,10 +43,9 @@ def blackjack(iterations=100, shoe_size=4):
         decision = player_decision(player, dealer, shoe)
 
         # Play each hand
-        while decision[0] != 'S':
-
-            execute_decision(player, dealer, decision[0], shoe)
-            decision = player_decision(player, dealer, shoe)
+        
+        player_turn(player,dealer,decision,shoe)
+            
 
         # Evaluate dealer's turn
         dealer_turn_result = dealer_turn(dealer, shoe)
@@ -57,6 +56,11 @@ def blackjack(iterations=100, shoe_size=4):
             print(f'Outcome for Hand #{index + 1}:')
             evaluate_hand_outcome(player, dealer)
 
+def player_turn(player,dealer,decision,shoe):
+    while decision[0] != 'S':
+
+            execute_decision(player, dealer, decision[0], shoe)
+            decision = player_decision(player, dealer, shoe)
 
 def evaluate_hand_outcome(player, dealer):
     player_total = player.total_value()
@@ -177,10 +181,11 @@ def player_decision(player,dealer,shoe):
     '''
     # error is coming from here. the fact that we are iterating through hand in hands is causing bugs. we need to iterate by index
     decisions = []
-    if len(player.hands) == 1:
+    for hand in player.hands:
         handType = initialHandType(player)
+        print(handType)
         decision = basicStrategy(handType, player, dealer.show_upcard())
-        decisions.append(decision)  
+        decisions.append(decision)
     return decisions
     
         
