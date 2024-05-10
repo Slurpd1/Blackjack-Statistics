@@ -10,6 +10,9 @@ class Hand:
     def __len__(self):
         return len(self._hand)
 
+    def can_split(self, num_of_splits):
+        return num_of_splits < 1 and self._hand[0].show_rank() == self._hand[1].show_rank()
+
     def get_card_at_index(self, index):
         """
         Get the card object at the specified index in the hand.
@@ -127,8 +130,8 @@ class PlayerHand:
         return total <= 21 and ace_count != 0
 
 
-    def can_split(self):
-        return self.num_of_splits < 1 and self.hands[0].get_card_at_index(0).show_rank() == self.hands[0].get_card_at_index(1).show_rank()
+    def can_split(self, index=0):
+        return self.hands[index].can_split(self.num_of_splits)
 
     def add_card(self, card, hand_index=0):
         self.hands[hand_index].add_card(card)

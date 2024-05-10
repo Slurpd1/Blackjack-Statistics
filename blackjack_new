@@ -32,7 +32,7 @@ def blackjack(iterations=100, shoe_size=4):
         # after the initial cards are dealt the player or dealer can have blackjack. this needs to be handled using the
         initial_blackjack = check_blackjack(player,dealer)
         if initial_blackjack == 'pwin':
-            print('player wins with initial blackjack. Countinuing')
+            print(f'player wins with initial blackjack. {player.display_hand()} Countinuing')
             continue
         elif initial_blackjack == 'dwin':
             print('player wins with initial blackjack. Countinuing')
@@ -179,13 +179,17 @@ def player_decision(player,dealer,shoe):
     shoe - the shoe that cards are being dealt from
     will return a decision, either H,S,D,P : Hit, stand, double, split.
     '''
-    # error is coming from here. the fact that we are iterating through hand in hands is causing bugs. we need to iterate by index
     decisions = []
     for hand in player.hands:
         handType = initialHandType(player)
-        print(handType)
         decision = basicStrategy(handType, player, dealer.show_upcard())
-        decisions.append(decision)
+        decisions.append(decision) 
+    elif len(player.hands) == 2:
+        hand_list = list(player.hands)
+        for hand in hand_list:
+            handType = initialHandType(hand)
+            decision = basicStrategy(handType, player, dealer.show_upcard())
+            decisions.append(decision) 
     return decisions
     
         
@@ -207,7 +211,6 @@ def initialHandType(playerHand):
         return 'split'
     elif playerHand.is_soft():
         return 'soft'
-    playerHand.display_hand()
     return 'hard'
 
 
