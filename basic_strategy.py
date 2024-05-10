@@ -73,7 +73,6 @@ def get_col(dealerTotal):
 
 def get_row(handType, playerHand):
     if handType == 'soft':
-        # small bug here. Hand can sometimes have an ace and still be hard. If the ace can no longer be an 11, the hand is now considered hard
         if playerHand.total_value() == 13:
             row = 0
         if playerHand.total_value() == 14:

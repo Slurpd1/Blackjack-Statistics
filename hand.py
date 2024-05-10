@@ -1,5 +1,6 @@
 from card import *
-    
+from shoe import *
+
 class Hand:
     def __init__(self, hand=None):
         if hand is None:
@@ -10,8 +11,8 @@ class Hand:
     def __len__(self):
         return len(self._hand)
 
-    def can_split(self, num_of_splits):
-        return num_of_splits < 1 and self._hand[0].show_rank() == self._hand[1].show_rank()
+    def can_split(self):
+        return self._hand[0].show_rank() == self._hand[1].show_rank() and len(self._hand) == 2
 
     def get_card_at_index(self, index):
         """
@@ -28,6 +29,26 @@ class Hand:
         else:
             print("Index out of range.")
             return None
+        
+    def is_soft(self, index=0):
+        # corrected to work with hand objects
+        hand = []
+        ace_count = 0
+        total= 0
+        for card in self._hand:
+            rank = card.show_rank()
+            if rank == 'J' or rank == 'Q' or rank == 'K':
+                rank = 10
+            elif rank == 'A':
+                if ace_count == 0:
+                    rank = 11
+                    ace_count +=1
+                else:
+                    ace_count += 1
+                    rank = 1
+            total += int(rank)
+        return total <= 21 and ace_count != 0
+            
         
     def clear(self):
         self._hand = []
@@ -94,7 +115,7 @@ class PlayerHand:
             return
 
         # Add a new hand after the current hand
-        self.hands.insert(index + 1, Hand())
+        self.hands.append(Hand())
 
         # Move one card from the original hand to the new hand
         split_card = self.hands[index].pop()
@@ -131,7 +152,7 @@ class PlayerHand:
 
 
     def can_split(self, index=0):
-        return self.hands[index].can_split(self.num_of_splits)
+        return self.hands[index].can_split()
 
     def add_card(self, card, hand_index=0):
         self.hands[hand_index].add_card(card)
@@ -157,11 +178,15 @@ class PlayerHand:
 
 
 # if __name__ == '__main__':
+#     shoe = Shoe()
+#     shoe.shuffle()
 #     hand = PlayerHand()
 #     card1 = Card('5','C')
 #     card2 = Card('5','C')
-#     card3 = Card('A','C')
 #     hand.add_card(card1)
 #     hand.add_card(card2)
-#     hand.add_card(card3)
-#     print(hand.is_soft())
+
+#     print(hand.can_split())
+#     hand.execute_split(shoe)
+#     hand.add_card(shoe.deal_card(),1)
+#     print(hand.display_hand(0), hand.display_hand(1))

@@ -39,12 +39,18 @@ def blackjack(iterations=100, shoe_size=4):
             continue
 
 
-        # Make decisions for each hand
+        # Make decisions for initial hand
         decision = player_decision(player, dealer, shoe)
 
-        # Play each hand
-        
         player_turn(player,dealer,decision,shoe)
+        # lets say the decision is a split. then this will execute a split and now we will have two hands. so theres no need to loop here
+
+        if decision == 'P':
+            for hands in player.hands:
+                # this causes a problem. decision will be passing a hand instead of a playerhand object which cannot split
+                decision = player_decision(hands, dealer, shoe)
+                player_turn(hands,dealer,decision,shoe)
+
             
 
         # Evaluate dealer's turn
@@ -58,7 +64,6 @@ def blackjack(iterations=100, shoe_size=4):
 
 def player_turn(player,dealer,decision,shoe):
     while decision[0] != 'S':
-
             execute_decision(player, dealer, decision[0], shoe)
             decision = player_decision(player, dealer, shoe)
 
@@ -87,11 +92,7 @@ def evaluate_hand_outcome(player, dealer):
     else:
         print("It's a tie!")
         print(f'player hand {player.display_hand(), player.total_value()}, dealer hand {dealer.display_hand(), dealer.total_value()}')
-        return 'push'
-
-        
-
-        
+        return 'push'      
 
 def execute_decision(player,dealer,decision,shoe):
     if decision == 'S':
@@ -106,6 +107,11 @@ def execute_decision(player,dealer,decision,shoe):
     if decision == 'P':
         print('splitting')
         player.execute_split(shoe)
+
+    if decision == 'D':
+        player.add_card(shoe.deal_card())
+        print(f'Decision: {decision}. Player hand is now {player.display_hand()}')
+        return
 
     if len(decision) == 2:
         #double do not be working
@@ -128,7 +134,6 @@ def check_blackjack(player,dealer):
         return 'dwin'
     return
 
-
 def dealer_turn(dealer,shoe):
     '''
     Used as a helper function inside of the blackjack function. This function is used after the players turn has concluded. The dealer will countinue to add cards to their
@@ -148,13 +153,6 @@ def dealer_turn(dealer,shoe):
     # otherwise, the dealer value is between 17 and 21. dealer is staying
     return 'dstay'
 
-
-
-def debug_print_initial():
-    '''
-    This function will be used to debug the inital part of the game. It will ensure everything is set up correctly.
-    '''
-    pass
     
 def deal_initial_cards(player, dealer, shoe):
     '''
@@ -179,18 +177,10 @@ def player_decision(player,dealer,shoe):
     shoe - the shoe that cards are being dealt from
     will return a decision, either H,S,D,P : Hit, stand, double, split.
     '''
-    decisions = []
-    for hand in player.hands:
-        handType = initialHandType(player)
-        decision = basicStrategy(handType, player, dealer.show_upcard())
-        decisions.append(decision) 
-    elif len(player.hands) == 2:
-        hand_list = list(player.hands)
-        for hand in hand_list:
-            handType = initialHandType(hand)
-            decision = basicStrategy(handType, player, dealer.show_upcard())
-            decisions.append(decision) 
-    return decisions
+
+    handType = initialHandType(player)
+    decision = basicStrategy(handType, player, dealer.show_upcard())
+    return decision
     
         
 
@@ -215,4 +205,4 @@ def initialHandType(playerHand):
 
 
 if __name__ == '__main__':
-    blackjack(100,4)
+    blackjack(10000,4)
