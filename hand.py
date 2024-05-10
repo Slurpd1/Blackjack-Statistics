@@ -7,6 +7,8 @@ class Hand:
         self._hand = hand
 
     # Other methods...
+    def __len__(self):
+        return len(self._hand)
 
     def can_split(self, num_of_splits):
         return num_of_splits < 1 and self._hand[0].show_rank() == self._hand[1].show_rank()
@@ -91,8 +93,8 @@ class PlayerHand:
             print("Cannot split again.")
             return
 
-        # Add a new hand
-        self.hands.append(Hand())
+        # Add a new hand after the current hand
+        self.hands.insert(index + 1, Hand())
 
         # Move one card from the original hand to the new hand
         split_card = self.hands[index].pop()
@@ -107,11 +109,26 @@ class PlayerHand:
 
 
 
+
     def is_soft(self, index=0):
         # corrected to work with hand objects
-        if self.hands[index].get_card_at_index(0).show_rank() == 'A' or self.hands[index].get_card_at_index(1).show_rank() == 'A':
-            return True
-        return False
+        hand = []
+        ace_count = 0
+        total = 0
+        for i in range(len(self.hands[0])):
+            rank = self.hands[0].get_card_at_index(i).show_rank()
+            if rank == 'J' or rank == 'Q' or rank == 'K':
+                rank = 10
+            elif rank == 'A':
+                if ace_count == 0:
+                    rank = 11
+                    ace_count +=1
+                else:
+                    ace_count += 1
+                    rank = 1
+            total += int(rank)
+        return total <= 21 and ace_count != 0
+
 
     def can_split(self, index=0):
         return self.hands[index].can_split(self.num_of_splits)
@@ -137,3 +154,14 @@ class PlayerHand:
     
     def clear(self):
         self.hands = [Hand()]
+
+
+if __name__ == '__main__':
+    hand = PlayerHand()
+    card1 = Card('5','C')
+    card2 = Card('5','C')
+    card3 = Card('A','C')
+    hand.add_card(card1)
+    hand.add_card(card2)
+    hand.add_card(card3)
+    print(hand.is_soft())
