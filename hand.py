@@ -153,12 +153,12 @@ class PlayerHand:
         self.hands = [Hand()]
 
 
-if __name__ == '__main__':
-    hand = PlayerHand()
-    card1 = Card('5','C')
-    card2 = Card('5','C')
-    card3 = Card('A','C')
-    hand.add_card(card1)
-    hand.add_card(card2)
-    hand.add_card(card3)
-    print(hand.is_soft())
+# if __name__ == '__main__':
+#     hand = PlayerHand()
+#     card1 = Card('5','C')
+#     card2 = Card('5','C')
+#     card3 = Card('A','C')
+#     hand.add_card(card1)
+#     hand.add_card(card2)
+#     hand.add_card(card3)
+#     print(hand.is_soft())
