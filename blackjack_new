@@ -154,8 +154,8 @@ def dealer_turn(dealer,shoe):
     return 'dstay'
 
     
-def deal_initial_cards(player, dealer, shoe):
-    '''
+def deal_initial_cardsplayer, dealer, shoe):
+    '''(
     This function is used to deal the initial cards to the players as well as the dealer.
     Modifies player and dealer by adding two cards.
     Shoe loses 4 cards.

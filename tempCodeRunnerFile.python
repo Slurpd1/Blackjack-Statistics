@@ -1,1 +1,2 @@
-                print(hands)
+if initial_decision == 'P' or initial_decision == 'H':
+        #     next_decision = next_decision(initial_decision,player,dealer,shoe)
