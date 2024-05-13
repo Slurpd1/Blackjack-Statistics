@@ -109,7 +109,11 @@ def get_row(handType, playerHand):
         if playerHand.total_value() >= 17:
             row = 9
     elif handType == 'split':
-        split_rank = playerHand.hands[0].get_card_at_index(0).show_rank()
+        try:
+            split_rank = playerHand.hands[0].get_card_at_index(0).show_rank()
+        except AttributeError:
+            split_rank = playerHand._hand[0].show_rank()
+
         if split_rank == '2':
             row = 0
         if split_rank == '3':

@@ -12,6 +12,7 @@ class Hand:
         return len(self._hand)
 
     def can_split(self):
+        print(self._hand)
         return self._hand[0].show_rank() == self._hand[1].show_rank() and len(self._hand) == 2
 
     def get_card_at_index(self, index):

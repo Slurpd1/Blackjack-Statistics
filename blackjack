@@ -3,107 +3,16 @@ from hand import *
 from card import Card
 from basic_strategy import *
 
-def blackjack_statistics(shoe_size=4):
+def blackjack_statistics(iterations=1000, shoe_size=4):
+    '''
+    Main function for playing the game of blackjack and aquiring data associated with games.
+    Parameters:
+    iterations - the number of times a game of blackjack will be played.
+    shoe_size - the number of decks that will be used in the shoe
+    '''
 
-    dealer = Hand()
-    player = PlayerHand()
-    shoe = Shoe(shoe_size)
+    shoe = Shoe(shoe_size) # always start with a fresh shoe.
     shoe.shuffle()
-
-    for i in range(1000):
-        # each time this loop completes a game has been played
-        # first check if shoe is less than 50% full
-        print('------------------------------------')
-        print(f'Hand #{i+1}')
-        if shoe.amount_left() < 50:
-            print('The shoe is less than 50 full. Re-shuffling the deck.')
-            shoe = Shoe()
-            shoe.shuffle()
-
-        deal_initial_cards(player, dealer, shoe)
-        # now everyone has their initial cards
-        print("Dealing initial cards...")
-        print("Player's hand:", player.display_hand())
-        print("Dealer's upcard:", dealer.show_upcard())
-
-        # now the player must decide what to do with the cards he has dealt vs the dealer
-        print("Generating a Decision")
-
-        decision = player_decision(player,dealer,shoe)
-
-        print("Player decision:", decision)
-
-        execute_decision(player,decision,shoe, dealer, 0)
-
-        dealer.dealer_turn(shoe.deal_card())
-        if dealer.total_value() > 21:
-            print(f'Player Wins! Player total{player.display_hand(), player.total_value()} Dealer total {dealer.display_hand(), dealer.total_value()}')
-        else:
-            evaluate_winner(player, dealer)
-
-
-        player.clear()
-        dealer.clear()
-
-def evaluate_winner(player, dealer):
-    if player.total_value() > dealer.total_value():
-        print(f'Player Wins! Player total{player.display_hand(), player.total_value()} Dealer total {dealer.display_hand(), dealer.total_value()}')
-
-        return
-    else:
-        print('dealer wins!')
-        print(f'Player Wins! Player total{player.display_hand(), player.total_value()} Dealer total {dealer.display_hand(), dealer.total_value()}')
-        return
-
-def deal_initial_cards(player, dealer, shoe):
-    """Deal initial cards to the player and dealer."""
-    for _ in range(2):
-        player.add_card(shoe.deal_card())
-        dealer.add_card(shoe.deal_card())
-
-def player_decision(player,dealer,shoe):
-    handType = initialHandType(player)
-    # this will return the type of hand we have, soft hard or split
-    decision = basicStrategy(handType, player, dealer.show_upcard())
-    return decision
-
-def initialHandType(playerHand):
-    if playerHand.can_split():
-        # both hands are equal suit, they are under the split category
-        return 'split'
-    elif playerHand.is_soft():
-        return 'soft'
-    playerHand.display_hand()
-    return 'hard'
-
-def execute_decision(playerHand, decision, shoe, dealer, index=0):
-    if len(decision) == 1:
-        if len(playerHand.hands) == 1:
-            # no splits here
-            if decision == 'S':
-                return
-        
-            elif decision == 'H':
-                playerHand.add_card(shoe.deal_card())
-                if playerHand.total_value() > 21:
-                    return
-                decision = player_decision(playerHand, dealer, shoe)
-                execute_decision(playerHand, decision, shoe, dealer, index + 1)
-            
-            elif decision == 'P':
-                playerHand.execute_split(shoe, index)
-                decision = player_decision(playerHand, dealer, shoe)
-                execute_decision(playerHand, decision, shoe, dealer, index + 1)
-            
-            elif decision == 'D':
-                playerHand.add_card(shoe.deal_card(), index)
-                return
-            return
-    if len(decision) == '2':
-        if decision[0] == 'D':
-            pass
-            return
-
 
 
 if __name__=='__main__':
