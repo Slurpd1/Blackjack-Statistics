@@ -42,6 +42,31 @@ def blackjack_statistics(iterations=1000, shoe_size=4):
         # Make decisions for initial hand
         initial_decision = initial_player_decision(player, dealer, shoe)
 
+        if initial_decision == 'H' and player.total_value() <= 21:
+            player_decision(player,dealer,shoe)
+
+        #problem lies here
+        if initial_decision == 'P':
+            print(player.hands[0], player.hands[1])
+            for i in range(len(player.hands)):
+                initial_decision = initial_player_decision(player.hands[i],dealer,shoe)
+
+                if initial_decision == 'H' and player.total_value() <= 21:
+                    player_decision(player,dealer,shoe)
+            # both of these hands are technically considered initial hands
+            
+
+
+
+        # Evaluate dealer's turn
+        dealer_turn_result = dealer_turn(dealer, shoe)
+        print("Dealer's turn result:", dealer_turn_result)
+
+        # Now evaluate each hand's outcome
+        for index, hand in enumerate(player.hands):
+            print(f'Outcome for Hand #{index + 1}:')
+            evaluate_hand_outcome(player, dealer)
+
 
         
 
@@ -95,8 +120,8 @@ def initial_player_decision(player,dealer,shoe):
     will return a decision, either H,S,D,P : Hit, stand, double, split.
     '''
 
-    handType = initial_hand_type(player)
-    decision = basicStrategy(handType, player, dealer.show_upcard())
+    hand_type = initial_hand_type(player)
+    decision = basicStrategy(hand_type, player, dealer.show_upcard())
     
     if decision == 'S':
         print(f'Stand. Player hand is {player.display_hand()}')
@@ -113,10 +138,39 @@ def initial_player_decision(player,dealer,shoe):
         print(f'Split. Player hands are now {player.display_hand()}')
         return 'P'
     
-    if decision == 'D':
+    if decision[0] == 'D':
         player.add_card(shoe.deal_card())
         print(f'Doubling down. Player hand is now {player.display_hand()}')
         return 'D'
+    
+def player_decision(player,dealer,shoe):
+    '''
+    This function will be used to return a decision.
+    Parameters:
+    player - the players hand, playerHand class
+    dealer - the dealers hand
+    shoe - the shoe that cards are being dealt from
+    will return a decision, either H,S : Hit, stand.
+    '''
+    if player.total_value() > 21:
+            return
+
+    type_hand = hand_type(player)
+    decision = basicStrategy(type_hand, player, dealer.show_upcard())
+
+    if len(decision) == 2:
+        decision == decision[1]
+
+    if decision == 'S':
+        print(f'Stand. Player hand is {player.display_hand()}')
+        return
+
+    if decision == 'H':
+        # if the player decides to hit, then they should be dealt a card.
+        player.add_card(shoe.deal_card())
+        print(f'Hit. Player hand is now {player.display_hand()}')
+        player_decision(player,dealer,shoe)
+
 
 def initial_hand_type(playerHand):
     '''
@@ -134,6 +188,65 @@ def initial_hand_type(playerHand):
     elif playerHand.is_soft():
         return 'soft'
     return 'hard'
+
+def hand_type(playerHand,index=0):
+    '''
+    Helper function for player decision.
+    The purpose of this function is to return the type of hand the player has. This is required for basic strategy
+    Types of hands
+    Soft: A soft hand can be one of two values. This is because of blackjacks ace property. Aces are either counter as 1 or 11
+    Hard: Every other type of hand is considered hard.
+    No split as this will be used after first turn.
+    '''
+    if playerHand.is_soft(index):
+        return 'soft'
+    return 'hard'
+    
+def dealer_turn(dealer,shoe):
+    '''
+    Used as a helper function inside of the blackjack function. This function is used after the players turn has concluded. The dealer will countinue to add cards to their
+    deck until the total is greater than or equal to 17, or the dealer busts.
+    Takes the dealers hand as a parameter and the shoe the game is being played with.
+    Returns one of two values, dbust and dstay
+    dbust means the dealer has busted. the player wins the hand
+    dstay means the dealer has stayed on their hand. The dealer and player hand now has to go to a final evaluation.
+    '''
+
+    while dealer.total_value() < 17:
+        dealer.add_card(shoe.deal_card())
+
+    # now we have exited. If the dealer value is over 21 then the dealer has busted
+    if dealer.total_value() > 21:
+        return 'dbust'
+    # otherwise, the dealer value is between 17 and 21. dealer is staying
+    return 'dstay'
+
+def evaluate_hand_outcome(player, dealer):
+    player_total = player.total_value()
+    dealer_total = dealer.total_value()
+
+    if player_total > 21:
+        print("Player busts!")
+        print(f'player hand {player.display_hand(), player.total_value()}, dealer hand {dealer.display_hand(), dealer.total_value()}')
+        return 'player_bust'
+
+    if dealer_total > 21:
+        print("Dealer busts!")
+        print(f'player hand {player.display_hand(), player.total_value()}, dealer hand {dealer.display_hand(), dealer.total_value()}')
+        return 'dealer_bust'
+
+    if player_total > dealer_total:
+        print("Player wins!")
+        print(f'player hand {player.display_hand(), player.total_value()}, dealer hand {dealer.display_hand(), dealer.total_value()}')
+        return 'player_win'
+    elif player_total < dealer_total:
+        print("Dealer wins!")
+        print(f'player hand {player.display_hand(), player.total_value()}, dealer hand {dealer.display_hand(), dealer.total_value()}')
+        return 'dealer_win'
+    else:
+        print("It's a tie!")
+        print(f'player hand {player.display_hand(), player.total_value()}, dealer hand {dealer.display_hand(), dealer.total_value()}')
+        return 'push'      
 
 
 if __name__=='__main__':

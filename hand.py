@@ -136,8 +136,8 @@ class PlayerHand:
         hand = []
         ace_count = 0
         total = 0
-        for i in range(len(self.hands[0])):
-            rank = self.hands[0].get_card_at_index(i).show_rank()
+        for i in range(len(self.hands[index])):
+            rank = self.hands[index].get_card_at_index(i).show_rank()
             if rank == 'J' or rank == 'Q' or rank == 'K':
                 rank = 10
             elif rank == 'A':
