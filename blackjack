@@ -47,9 +47,8 @@ def blackjack_statistics(iterations=1000, shoe_size=4):
 
         #problem lies here
         if initial_decision == 'P':
-            print(player.hands[0], player.hands[1])
             for i in range(len(player.hands)):
-                initial_decision = initial_player_decision(player.hands[i],dealer,shoe)
+                initial_decision = initial_player_decision(player.hands[i],dealer,shoe,'N')
 
                 if initial_decision == 'H' and player.total_value() <= 21:
                     player_decision(player,dealer,shoe)
@@ -64,7 +63,7 @@ def blackjack_statistics(iterations=1000, shoe_size=4):
 
         # Now evaluate each hand's outcome
         for index, hand in enumerate(player.hands):
-            print(f'Outcome for Hand #{index + 1}:')
+            print(f'Outcome for Hand #{index + 1}: {player.hands[index].display_hand(), player.hands[index].total_value()}')
             evaluate_hand_outcome(player, dealer)
 
 
@@ -110,7 +109,7 @@ def check_initial_blackjack(player,dealer):
         return 'dwin'
     return
 
-def initial_player_decision(player,dealer,shoe):
+def initial_player_decision(player,dealer,shoe,splitting='Y'):
     '''
     This function will be used to return a decision after the initial deal of cards.
     Parameters:
@@ -122,6 +121,7 @@ def initial_player_decision(player,dealer,shoe):
 
     hand_type = initial_hand_type(player)
     decision = basicStrategy(hand_type, player, dealer.show_upcard())
+
     
     if decision == 'S':
         print(f'Stand. Player hand is {player.display_hand()}')
@@ -132,11 +132,14 @@ def initial_player_decision(player,dealer,shoe):
         player.add_card(shoe.deal_card())
         print(f'Hit. Player hand is now {player.display_hand()}')
         return 'H'
-    
-    if decision == 'P':
-        player.execute_split(shoe)
-        print(f'Split. Player hands are now {player.display_hand()}')
-        return 'P'
+
+    if splitting == 'N':
+        pass
+    else:    
+        if decision == 'P':
+            player.execute_split(shoe)
+            print(f'Split. Player hands are now {player.display_hand()}')
+            return 'P'
     
     if decision[0] == 'D':
         player.add_card(shoe.deal_card())
@@ -227,25 +230,25 @@ def evaluate_hand_outcome(player, dealer):
 
     if player_total > 21:
         print("Player busts!")
-        print(f'player hand {player.display_hand(), player.total_value()}, dealer hand {dealer.display_hand(), dealer.total_value()}')
+        print(f'dealer hand {dealer.display_hand(), dealer.total_value()}')
         return 'player_bust'
 
     if dealer_total > 21:
         print("Dealer busts!")
-        print(f'player hand {player.display_hand(), player.total_value()}, dealer hand {dealer.display_hand(), dealer.total_value()}')
+        print(f'dealer hand {dealer.display_hand(), dealer.total_value()}')
         return 'dealer_bust'
 
     if player_total > dealer_total:
         print("Player wins!")
-        print(f'player hand {player.display_hand(), player.total_value()}, dealer hand {dealer.display_hand(), dealer.total_value()}')
+        print(f'dealer hand {dealer.display_hand(), dealer.total_value()}')
         return 'player_win'
     elif player_total < dealer_total:
         print("Dealer wins!")
-        print(f'player hand {player.display_hand(), player.total_value()}, dealer hand {dealer.display_hand(), dealer.total_value()}')
+        print(f'dealer hand {dealer.display_hand(), dealer.total_value()}')
         return 'dealer_win'
     else:
         print("It's a tie!")
-        print(f'player hand {player.display_hand(), player.total_value()}, dealer hand {dealer.display_hand(), dealer.total_value()}')
+        print(f'dealer hand {dealer.display_hand(), dealer.total_value()}')
         return 'push'      
 
 
