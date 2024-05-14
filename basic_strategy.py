@@ -73,6 +73,10 @@ def get_col(dealerTotal):
 
 def get_row(handType, playerHand):
     if handType == 'soft':
+        # there is a very rare case here where we get an ace and an ace which can no longer be split
+        # since game is being played with one split allowed. so technically we can have a soft 12
+        if playerHand.total_value() == 12:
+            row = 0
         if playerHand.total_value() == 13:
             row = 0
         if playerHand.total_value() == 14:
@@ -135,5 +139,4 @@ def get_row(handType, playerHand):
         if split_rank == 'A':
             row = 9
     return row
-
 

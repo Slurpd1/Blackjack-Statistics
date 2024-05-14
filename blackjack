@@ -45,7 +45,6 @@ def blackjack_statistics(iterations=1000, shoe_size=4):
         if initial_decision == 'H' and player.total_value() <= 21:
             player_decision(player,dealer,shoe)
 
-        #problem lies here
         if initial_decision == 'P':
             for i in range(len(player.hands)):
                 initial_decision = initial_player_decision(player.hands[i],dealer,shoe,'N')
@@ -253,4 +252,4 @@ def evaluate_hand_outcome(player, dealer):
 
 
 if __name__=='__main__':
-    blackjack_statistics()
+    blackjack_statistics(100000,4)
