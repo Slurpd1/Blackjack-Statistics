@@ -1,13 +1,1 @@
-# Make decisions for initial hand
-        initial_decision = initial_player_decision(player, dealer, shoe)
-
-        if initial_decision == 'H' and player.total_value() <= 21:
-            player_decision(player,dealer,shoe)
-            
-        if initial_decision == 'P':
-            for i in range(len(player.hands)):
-                initial_decision = initial_player_decision(player.hands[i],dealer,shoe,'N')
-
-                if initial_decision == 'H' and player.total_value() <= 21:
-                    player_decision(player,dealer,shoe)
-            # both of these hands are technically considered initial hands
+n

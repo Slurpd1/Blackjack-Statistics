@@ -2,6 +2,31 @@ from shoe import Shoe
 from hand import *
 from card import Card
 from basic_strategy import *
+import sqlite3
+import uuid
+
+# connect to sql db to store games
+connection = sqlite3.connect('blackjack_statistics')
+cursor = connection.cursor()
+
+cursor.execute('DROP TABLE IF EXISTS blackjack_statistics')
+cursor.execute('DELETE FROM blackjack_statistics')
+
+cursor.execute('''CREATE TABLE IF NOT EXISTS blackjack_statistics (
+                    id TEXT PRIMARY KEY,
+                    initial_hand_player TEXT,
+                    type TEXT,
+                    init_total_player INTEGER,
+                    dealer_up TEXT,
+                    dealer_initial_total TEXT,
+                    decision_init_player TEXT,
+                    split TEXT,
+                    subsequent_decisions TEXT,
+                    dealer_decisions TEXT,
+                    dealer_total TEXT,
+                    player_total,
+                    win TEXT
+                )''')
 
 def blackjack_statistics(iterations=1000, shoe_size=4):
     '''
@@ -15,6 +40,14 @@ def blackjack_statistics(iterations=1000, shoe_size=4):
     shoe.shuffle()
 
     for i in range(iterations):
+        game_id = str(uuid.uuid4())
+
+        # Insert just the game ID into the table
+        cursor.execute('''INSERT INTO blackjack_statistics (id) VALUES (?)''', (game_id,))
+
+        # Commit the initial insertion
+        connection.commit()
+
         print('----------')
         print(f'Game #{i+1}.')
         # initialize dealer hand, player hand
@@ -25,6 +58,9 @@ def blackjack_statistics(iterations=1000, shoe_size=4):
             shoe.shuffle()
 
         player, dealer = deal_initial_cards(shoe)
+
+        db_init_hand = player.display_hand()[0][0],player.display_hand()[0][1]
+        db_init_total_value = player.total_value()
 
         initial_blackjack = check_initial_blackjack(player,dealer)
 
@@ -41,6 +77,7 @@ def blackjack_statistics(iterations=1000, shoe_size=4):
 
         # Make decisions for initial hand
         initial_decision = initial_player_decision(player, dealer, shoe)
+        db_init_decision = initial_decision
 
         if initial_decision == 'H' and player.total_value() <= 21:
             player_decision(player,dealer,shoe)
@@ -64,6 +101,11 @@ def blackjack_statistics(iterations=1000, shoe_size=4):
         for index, hand in enumerate(player.hands):
             print(f'Outcome for Hand #{index + 1}: {player.hands[index].display_hand(), player.hands[index].total_value()}')
             evaluate_hand_outcome(player, dealer)
+
+    # cursor.execute('SELECT * FROM blackjack_statistics')
+
+    # results = cursor.fetchall()
+    # print(results)
 
 
         
@@ -252,4 +294,6 @@ def evaluate_hand_outcome(player, dealer):
 
 
 if __name__=='__main__':
-    blackjack_statistics(100000,4)
+    blackjack_statistics(3,4)
+
+    
