@@ -72,7 +72,7 @@ def blackjack_statistics(iterations=1000, shoe_size=4):
         
         connection.commit()
 
-        # for debugging purposes
+        # handling initial blackjack scenarios
         if initial_blackjack == 'pwin':
             cursor.execute('''UPDATE blackjack_statistics 
                   SET decision_init_player = ?, split = ?, dealer_total = ?, player_total = ?, win = ?, win_multiplier = ?
@@ -109,6 +109,15 @@ def blackjack_statistics(iterations=1000, shoe_size=4):
 
         # SQL
         db_init_decision = initial_decision
+        cursor.execute('''UPDATE blackjack_statistics
+            SET decision_init_player = ?, 
+                split = CASE
+                       WHEN ? = 'P' THEN 'Y'
+                       ELSE 'N'
+                    END
+            WHERE id = ?''', (db_init_decision, db_init_decision, game_id))
+        
+        connection.commit()
 
 
         if initial_decision == 'H' and player.total_value() <= 21:
