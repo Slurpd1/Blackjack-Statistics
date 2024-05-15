@@ -10,7 +10,6 @@ connection = sqlite3.connect('blackjack_statistics')
 cursor = connection.cursor()
 
 cursor.execute('DROP TABLE IF EXISTS blackjack_statistics')
-cursor.execute('DELETE FROM blackjack_statistics')
 
 cursor.execute('''CREATE TABLE IF NOT EXISTS blackjack_statistics (
                     id TEXT PRIMARY KEY,
@@ -18,15 +17,16 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS blackjack_statistics (
                     type TEXT,
                     init_total_player INTEGER,
                     dealer_up TEXT,
-                    dealer_initial_total TEXT,
                     decision_init_player TEXT,
                     split TEXT,
                     subsequent_decisions TEXT,
                     dealer_decisions TEXT,
                     dealer_total TEXT,
-                    player_total,
-                    win TEXT
+                    player_total INTEGER,
+                    win TEXT,
+                    win_multiplier FLOAT
                 )''')
+
 
 def blackjack_statistics(iterations=1000, shoe_size=4):
     '''
@@ -59,30 +59,63 @@ def blackjack_statistics(iterations=1000, shoe_size=4):
 
         player, dealer = deal_initial_cards(shoe)
 
+        initial_blackjack = check_initial_blackjack(player,dealer)
+
         db_init_hand = player.display_hand()[0][0],player.display_hand()[0][1]
         db_init_total_value = player.total_value()
+        db_init_hand_type = initial_hand_type(player)
+        db_dealer_up = str(dealer.show_upcard())
 
-        initial_blackjack = check_initial_blackjack(player,dealer)
+        cursor.execute('''UPDATE blackjack_statistics 
+                  SET initial_hand_player = ?, init_total_player = ?, type = ?, dealer_up = ?
+                  WHERE id = ?''', (str(db_init_hand), db_init_total_value, db_init_hand_type, db_dealer_up, game_id))
+        
+        connection.commit()
 
         # for debugging purposes
         if initial_blackjack == 'pwin':
+            cursor.execute('''UPDATE blackjack_statistics 
+                  SET decision_init_player = ?, split = ?, dealer_total = ?, player_total = ?, win = ?, win_multiplier = ?
+                  WHERE id = ?''', ('S', 'N', dealer.total_value(), player.total_value(), 'Y', 1.5, game_id))
+        
+            connection.commit()
+
             print(f'Player wins with initial blackjack. {player.display_hand()} Countinuing')
+
             continue
+
         elif initial_blackjack == 'dwin':
+            cursor.execute('''UPDATE blackjack_statistics 
+                  SET decision_init_player = ?, split = ?, dealer_total = ?, player_total = ?, win = ?
+                  WHERE id = ?''', ('S', 'N', dealer.total_value(), player.total_value(), 'L', game_id))
+        
+            connection.commit()
+
             print(f'Dealer wins with initial blackjack. {dealer.display_hand()} Countinuing')
             continue
+
         elif initial_blackjack == 'pbj':
+            cursor.execute('''UPDATE blackjack_statistics 
+                  SET decision_init_player = ?, split = ?, dealer_total = ?, player_total = ?, win = ?
+                  WHERE id = ?''', ('S', 'N', dealer.total_value(), player.total_value(), 'D', game_id))
+        
+            connection.commit()
+
             print(f'It\'s a push! Dealer has {dealer.display_hand()} and player has {player.display_hand()} Countinuing')
             continue
 
         # Make decisions for initial hand
         initial_decision = initial_player_decision(player, dealer, shoe)
+
+        # SQL
         db_init_decision = initial_decision
+
 
         if initial_decision == 'H' and player.total_value() <= 21:
             player_decision(player,dealer,shoe)
 
         if initial_decision == 'P':
+            
             for i in range(len(player.hands)):
                 initial_decision = initial_player_decision(player.hands[i],dealer,shoe,'N')
 
@@ -294,6 +327,6 @@ def evaluate_hand_outcome(player, dealer):
 
 
 if __name__=='__main__':
-    blackjack_statistics(3,4)
+    blackjack_statistics(100,4)
 
     
