@@ -25,6 +25,20 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS blackjack_statistics (
                     player_total INTEGER,
                     win TEXT,
                     win_multiplier FLOAT
+                    
+                    split_init_hand_1 TEXT,
+                    split_init_type_1 TEXT,
+                    split_decision_init_1 TEXT,
+                    split_total_1 TEXT,
+                    split_win_1 TEXT,
+                    split_win_multiplier_1 FLOAT
+               
+                    split_init_hand_2 TEXT,
+                    split_init_type_2 TEXT,
+                    split_decision_init_2 TEXT,
+                    split_total_2 TEXT,
+                    split_win_2 TEXT,
+                    split_win_multiplier_2 FLOAT
                 )''')
 
 
@@ -106,7 +120,7 @@ def blackjack_statistics(iterations=1000, shoe_size=4):
 
         # Make decisions for initial hand
         initial_decision = initial_player_decision(player, dealer, shoe)
-
+        
         # SQL
         db_init_decision = initial_decision
         cursor.execute('''UPDATE blackjack_statistics
@@ -140,6 +154,7 @@ def blackjack_statistics(iterations=1000, shoe_size=4):
 
         # Now evaluate each hand's outcome
         for index, hand in enumerate(player.hands):
+            print('swag',hand.display_hand())
             print(f'Outcome for Hand #{index + 1}: {player.hands[index].display_hand(), player.hands[index].total_value()}')
             evaluate_hand_outcome(player, dealer)
 
@@ -221,6 +236,7 @@ def initial_player_decision(player,dealer,shoe,splitting='Y'):
         if decision == 'P':
             player.execute_split(shoe)
             print(f'Split. Player hands are now {player.display_hand()}')
+
             return 'P'
     
     if decision[0] == 'D':
@@ -335,6 +351,6 @@ def evaluate_hand_outcome(player, dealer):
 
 
 if __name__=='__main__':
-    blackjack_statistics(100,4)
+    blackjack_statistics(10000,4)
 
     
