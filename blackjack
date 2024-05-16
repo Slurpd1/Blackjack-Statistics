@@ -4,6 +4,9 @@ from card import Card
 from basic_strategy import *
 import sqlite3
 import uuid
+import sqlite3
+import pandas as pd # type: ignore
+import plotly.graph_objs as go # type: ignore
 
 # connect to sql db to store games
 connection = sqlite3.connect('blackjack_statistics')
@@ -19,11 +22,10 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS blackjack_statistics (
                     dealer_up TEXT,
                     decision_init_player TEXT,
                     split TEXT,
-                    subsequent_decisions TEXT,
-                    dealer_decisions TEXT,
                     dealer_total TEXT,
                     player_total INTEGER,
-                    win TEXT,
+                    win INTEGER,
+                    outcome_type TEXT,
                     win_multiplier FLOAT
                     
                     split_init_hand_1 TEXT,
@@ -90,7 +92,7 @@ def blackjack_statistics(iterations=1000, shoe_size=4):
         if initial_blackjack == 'pwin':
             cursor.execute('''UPDATE blackjack_statistics 
                   SET decision_init_player = ?, split = ?, dealer_total = ?, player_total = ?, win = ?, win_multiplier = ?
-                  WHERE id = ?''', ('S', 'N', dealer.total_value(), player.total_value(), 'Y', 1.5, game_id))
+                  WHERE id = ?''', ('S', 'N', dealer.total_value(), player.total_value(), '1', 1.5, game_id))
         
             connection.commit()
 
@@ -100,8 +102,8 @@ def blackjack_statistics(iterations=1000, shoe_size=4):
 
         elif initial_blackjack == 'dwin':
             cursor.execute('''UPDATE blackjack_statistics 
-                  SET decision_init_player = ?, split = ?, dealer_total = ?, player_total = ?, win = ?
-                  WHERE id = ?''', ('S', 'N', dealer.total_value(), player.total_value(), 'L', game_id))
+                  SET decision_init_player = ?, split = ?, dealer_total = ?, player_total = ?, win = ?, win_multiplier = ?
+                  WHERE id = ?''', ('S', 'N', dealer.total_value(), player.total_value(), '-1', 1.5, game_id))
         
             connection.commit()
 
@@ -110,8 +112,8 @@ def blackjack_statistics(iterations=1000, shoe_size=4):
 
         elif initial_blackjack == 'pbj':
             cursor.execute('''UPDATE blackjack_statistics 
-                  SET decision_init_player = ?, split = ?, dealer_total = ?, player_total = ?, win = ?
-                  WHERE id = ?''', ('S', 'N', dealer.total_value(), player.total_value(), 'D', game_id))
+                  SET decision_init_player = ?, split = ?, dealer_total = ?, player_total = ?, win = ?, win_multiplier = ?
+                  WHERE id = ?''', ('S', 'N', dealer.total_value(), player.total_value(), '0', 1.5, game_id))
         
             connection.commit()
 
@@ -128,8 +130,12 @@ def blackjack_statistics(iterations=1000, shoe_size=4):
                 split = CASE
                        WHEN ? = 'P' THEN 'Y'
                        ELSE 'N'
+                    END,
+                win_multiplier = CASE
+                       WHEN ? = 'D' THEN 2
+                       ELSE 1
                     END
-            WHERE id = ?''', (db_init_decision, db_init_decision, game_id))
+            WHERE id = ?''', (db_init_decision, db_init_decision, db_init_decision, game_id))
         
         connection.commit()
 
@@ -154,9 +160,9 @@ def blackjack_statistics(iterations=1000, shoe_size=4):
 
         # Now evaluate each hand's outcome
         for index, hand in enumerate(player.hands):
-            print('swag',hand.display_hand())
             print(f'Outcome for Hand #{index + 1}: {player.hands[index].display_hand(), player.hands[index].total_value()}')
-            evaluate_hand_outcome(player, dealer)
+
+            evaluate_hand_outcome(player, dealer, game_id)
 
     # cursor.execute('SELECT * FROM blackjack_statistics')
 
@@ -322,35 +328,55 @@ def dealer_turn(dealer,shoe):
     # otherwise, the dealer value is between 17 and 21. dealer is staying
     return 'dstay'
 
-def evaluate_hand_outcome(player, dealer):
+def evaluate_hand_outcome(player, dealer, game_id):
     player_total = player.total_value()
     dealer_total = dealer.total_value()
 
+        # Determine outcome
     if player_total > 21:
-        print("Player busts!")
-        print(f'dealer hand {dealer.display_hand(), dealer.total_value()}')
-        return 'player_bust'
-
-    if dealer_total > 21:
-        print("Dealer busts!")
-        print(f'dealer hand {dealer.display_hand(), dealer.total_value()}')
-        return 'dealer_bust'
-
-    if player_total > dealer_total:
-        print("Player wins!")
-        print(f'dealer hand {dealer.display_hand(), dealer.total_value()}')
-        return 'player_win'
+        outcome = 'player_bust'
+        game_win = -1
+    elif dealer_total > 21:
+        outcome = 'dealer_bust'
+        game_win = 1
+    elif player_total > dealer_total:
+        outcome = 'player_win'
+        game_win = 1
     elif player_total < dealer_total:
+        outcome = 'dealer_win'
+        game_win = -1
+    else:
+        outcome = 'push'
+        game_win = 0
+
+    # Update database with outcome
+    cursor.execute('''UPDATE blackjack_statistics
+                    SET win = ?,
+                        outcome_type = ?,
+                        player_total = ?,
+                        dealer_total = ?
+                    WHERE id = ?''', (game_win, outcome, player_total, dealer_total, game_id))
+
+    connection.commit()
+
+    print(f'dealer hand {dealer.display_hand(), dealer_total}')
+    # Print outcome (optional)
+    if outcome == 'player_bust':
+        print("Player busts!")
+    elif outcome == 'dealer_bust':
+        print("Dealer busts!")
+    elif outcome == 'player_win':
+        print("Player wins!")
+    elif outcome == 'dealer_win':
         print("Dealer wins!")
-        print(f'dealer hand {dealer.display_hand(), dealer.total_value()}')
-        return 'dealer_win'
     else:
         print("It's a tie!")
-        print(f'dealer hand {dealer.display_hand(), dealer.total_value()}')
-        return 'push'      
+
+
 
 
 if __name__=='__main__':
-    blackjack_statistics(10000,4)
+    blackjack_statistics(69,4)
 
-    
+
+
