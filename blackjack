@@ -137,7 +137,6 @@ def blackjack_statistics(iterations=1000, shoe_size=4):
 
         # Evaluate dealer's turn
         dealer_turn_result = dealer_turn(dealer, shoe)
-        print("Dealer's turn result:", dealer_turn_result)
 
         # Now evaluate each hand's outcome
         for index, hand in enumerate(player.hands):
