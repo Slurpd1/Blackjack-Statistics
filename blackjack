@@ -7,12 +7,13 @@ import uuid
 import sqlite3
 import pandas as pd # type: ignore
 import plotly.graph_objs as go # type: ignore
+import plotly.express as px # type: ignore
 
 # connect to sql db to store games
 connection = sqlite3.connect('blackjack_statistics')
 cursor = connection.cursor()
 
-cursor.execute('DROP TABLE IF EXISTS blackjack_statistics')
+#cursor.execute('DROP TABLE IF EXISTS blackjack_statistics')
 
 cursor.execute('''CREATE TABLE IF NOT EXISTS blackjack_statistics (
                     id TEXT PRIMARY KEY,
@@ -64,8 +65,8 @@ def blackjack_statistics(iterations=1000, shoe_size=4):
         # Commit the initial insertion
         connection.commit()
 
-        print('----------')
-        print(f'Game #{i+1}.')
+        ###print(f'Game #{i+1}.')
+        ###print('-------')
         # initialize dealer hand, player hand
 
         if shoe.amount_left() < 50: # checks to see if shoe is less than 50% full.
@@ -96,7 +97,7 @@ def blackjack_statistics(iterations=1000, shoe_size=4):
         
             connection.commit()
 
-            print(f'Player wins with initial blackjack. {player.display_hand()} Countinuing')
+            ###print(f'Player wins with initial blackjack. {player.display_hand()} Countinuing')
 
             continue
 
@@ -107,7 +108,7 @@ def blackjack_statistics(iterations=1000, shoe_size=4):
         
             connection.commit()
 
-            print(f'Dealer wins with initial blackjack. {dealer.display_hand()} Countinuing')
+            ###print(f'Dealer wins with initial blackjack. {dealer.display_hand()} Countinuing')
             continue
 
         elif initial_blackjack == 'pbj':
@@ -117,7 +118,7 @@ def blackjack_statistics(iterations=1000, shoe_size=4):
         
             connection.commit()
 
-            print(f'It\'s a push! Dealer has {dealer.display_hand()} and player has {player.display_hand()} Countinuing')
+            ###print(f'It\'s a push! Dealer has {dealer.display_hand()} and player has {player.display_hand()} Countinuing')
             continue
 
         # Make decisions for initial hand
@@ -160,7 +161,7 @@ def blackjack_statistics(iterations=1000, shoe_size=4):
 
         # Now evaluate each hand's outcome
         for index, hand in enumerate(player.hands):
-            print(f'Outcome for Hand #{index + 1}: {player.hands[index].display_hand(), player.hands[index].total_value()}')
+            ###print(f'Outcome for Hand #{index + 1}: {player.hands[index].display_hand(), player.hands[index].total_value()}')
 
             evaluate_hand_outcome(player, dealer, game_id)
 
@@ -188,9 +189,9 @@ def deal_initial_cards(shoe):
         player.add_card(shoe.deal_card()) # by deafult this deals to the first hand in the deck.
         dealer.add_card(shoe.deal_card())
     
-    print("Dealing initial cards...")
-    print("Player's hand:", player.display_hand())
-    print("Dealer's upcard:", dealer.show_upcard())
+    ###print("Dealing initial cards...")
+    ###print("Player's hand:", player.display_hand())
+    ###print("Dealer's upcard:", dealer.show_upcard())
 
     return player, dealer
 
@@ -227,13 +228,13 @@ def initial_player_decision(player,dealer,shoe,splitting='Y'):
 
     
     if decision == 'S':
-        print(f'Stand. Player hand is {player.display_hand()}')
+        ###print(f'Stand. Player hand is {player.display_hand()}')
         return 'S'
     
     if decision == 'H':
         # if the player decides to hit, then they should be dealt a card.
         player.add_card(shoe.deal_card())
-        print(f'Hit. Player hand is now {player.display_hand()}')
+        ###print(f'Hit. Player hand is now {player.display_hand()}')
         return 'H'
 
     if splitting == 'N':
@@ -241,13 +242,13 @@ def initial_player_decision(player,dealer,shoe,splitting='Y'):
     else:    
         if decision == 'P':
             player.execute_split(shoe)
-            print(f'Split. Player hands are now {player.display_hand()}')
+            ###(f'Split. Player hands are now {player.display_hand()}')
 
             return 'P'
     
     if decision[0] == 'D':
         player.add_card(shoe.deal_card())
-        print(f'Doubling down. Player hand is now {player.display_hand()}')
+        ###print(f'Doubling down. Player hand is now {player.display_hand()}')
         return 'D'
     
 def player_decision(player,dealer,shoe):
@@ -269,13 +270,13 @@ def player_decision(player,dealer,shoe):
         decision == decision[1]
 
     if decision == 'S':
-        print(f'Stand. Player hand is {player.display_hand()}')
+        ###print(f'Stand. Player hand is {player.display_hand()}')
         return
 
     if decision == 'H':
         # if the player decides to hit, then they should be dealt a card.
         player.add_card(shoe.deal_card())
-        print(f'Hit. Player hand is now {player.display_hand()}')
+        ###print(f'Hit. Player hand is now {player.display_hand()}')
         player_decision(player,dealer,shoe)
 
 
@@ -359,24 +360,73 @@ def evaluate_hand_outcome(player, dealer, game_id):
 
     connection.commit()
 
-    print(f'dealer hand {dealer.display_hand(), dealer_total}')
-    # Print outcome (optional)
-    if outcome == 'player_bust':
-        print("Player busts!")
-    elif outcome == 'dealer_bust':
-        print("Dealer busts!")
-    elif outcome == 'player_win':
-        print("Player wins!")
-    elif outcome == 'dealer_win':
-        print("Dealer wins!")
-    else:
-        print("It's a tie!")
+    # for debugging
+    # print(f'dealer hand {dealer.display_hand(), dealer_total}')
+    # # Print outcome (optional)
+    # if outcome == 'player_bust':
+    #     print("Player busts!")
+    # elif outcome == 'dealer_bust':
+    #     print("Dealer busts!")
+    # elif outcome == 'player_win':
+    #     print("Player wins!")
+    # elif outcome == 'dealer_win':
+    #     print("Dealer wins!")
+    # else:
+    #     print("It's a tie!")
+
+def fetch_and_prepare_data(db_path):
+    # Connect to SQLite database
+    connection = sqlite3.connect(db_path)
+
+    # Fetch the data
+    query = '''
+    SELECT init_total_player, dealer_up, win
+    FROM blackjack_statistics
+    '''
+    df = pd.read_sql_query(query, connection)
+
+    # Close the connection
+    connection.close()
+
+    # Calculate win rates
+    win_rates = df.groupby(['init_total_player', 'dealer_up']).mean()['win'].unstack()
+
+    # Define the desired order for dealer upcards
+    dealer_upcard_order = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
+
+    # Group J, Q, K, 10 together
+    grouped_dealer_order = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
+
+    # Sort columns based on the order defined above
+    win_rates = win_rates[grouped_dealer_order]
+
+    return win_rates
+
+def create_3d_surface_plot(win_rates):
+    fig = go.Figure(data=[go.Surface(z=win_rates.values, x=win_rates.columns, y=win_rates.index)])
+
+    # Customize layout
+    fig.update_layout(title='Win Rate by Initial Hand Total and Dealer Upcard',
+                      scene=dict(
+                          xaxis_title='Dealer Upcard',
+                          yaxis_title='Player Initial Hand Total',
+                          zaxis_title='Win Rate'),
+                      autosize=False,
+                      width=800, height=800)
+
+    # Show plot
+    fig.show()
+
+def fetch_and_plot_blackjack_statistics(db_path):
+    win_rates = fetch_and_prepare_data(db_path)
+    create_3d_surface_plot(win_rates)
 
 
 
 
 if __name__=='__main__':
-    blackjack_statistics(69,4)
+    blackjack_statistics(10,4)
+    fetch_and_plot_blackjack_statistics('blackjack_statistics.')
 
 
 
