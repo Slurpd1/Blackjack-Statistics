@@ -402,7 +402,7 @@ def fetch_and_prepare_data(db_path):
 
     return win_rates
 
-def create_3d_surface_plot(win_rates):
+def create_3d_surface_plot(win_rates, save_path=None, interactive_path=None):
     fig = go.Figure(data=[go.Surface(z=win_rates.values, x=win_rates.columns, y=win_rates.index)])
 
     # Customize layout
@@ -417,16 +417,27 @@ def create_3d_surface_plot(win_rates):
     # Show plot
     fig.show()
 
-def fetch_and_plot_blackjack_statistics(db_path):
+    # Save plot if save_path is provided
+    if save_path:
+        fig.write_image(save_path)
+
+    # Save interactive plot if interactive_path is provided
+    if interactive_path:
+        fig.write_html(interactive_path)
+
+    # Show plot
+    fig.show()
+
+def fetch_and_plot_blackjack_statistics(db_path, save_path, interactive_path):
     win_rates = fetch_and_prepare_data(db_path)
-    create_3d_surface_plot(win_rates)
+    create_3d_surface_plot(win_rates, save_path, interactive_path)
 
-
-
+save_path = 'E:\\Programming\\bj\\Blackjack-Statistics\\3d_heatmap.png'
+interactive_path = 'E:\\Programming\\bj\\Blackjack-Statistics\\3d_heatmap.html'
 
 if __name__=='__main__':
-    blackjack_statistics(10,4)
-    fetch_and_plot_blackjack_statistics('blackjack_statistics.')
+    blackjack_statistics(100,4)
+    fetch_and_plot_blackjack_statistics('blackjack_statistics', save_path, interactive_path)
 
 
 
