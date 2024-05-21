@@ -14,6 +14,8 @@ connection = sqlite3.connect('blackjack_statistics')
 cursor = connection.cursor()
 
 #cursor.execute('DROP TABLE IF EXISTS blackjack_statistics')
+cursor.execute('DROP TABLE IF EXISTS blackjack_statistics')
+
 
 cursor.execute('''CREATE TABLE IF NOT EXISTS blackjack_statistics (
                     id TEXT PRIMARY KEY,
@@ -27,14 +29,14 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS blackjack_statistics (
                     player_total INTEGER,
                     win INTEGER,
                     outcome_type TEXT,
-                    win_multiplier FLOAT
+                    win_multiplier FLOAT,
                     
                     split_init_hand_1 TEXT,
                     split_init_type_1 TEXT,
                     split_decision_init_1 TEXT,
                     split_total_1 TEXT,
                     split_win_1 TEXT,
-                    split_win_multiplier_1 FLOAT
+                    split_win_multiplier_1 FLOAT,
                
                     split_init_hand_2 TEXT,
                     split_init_type_2 TEXT,
@@ -145,13 +147,58 @@ def blackjack_statistics(iterations=1000, shoe_size=4):
             player_decision(player,dealer,shoe)
 
         if initial_decision == 'P':
-            
+            # there can also technically be split blackjack wins
+
             for i in range(len(player.hands)):
+                handtype = hand_type(player.hands[i])
+                init_total = player.hands[i].total_value()
                 initial_decision = initial_player_decision(player.hands[i],dealer,shoe,'N')
 
                 if initial_decision == 'H' and player.total_value() <= 21:
                     player_decision(player,dealer,shoe)
-            # both of these hands are technically considered initial hands
+
+                # might need to be modified for blackjacks.
+                if initial_decision == 'D':
+                    win_multiplier = 2
+                else:
+                    win_multiplier = 1
+                
+                if i == 0:
+                    # Combine the two cards into a single string
+                    split_init_hand = f"{player.hands[i].get_card_at_index(0)},{player.hands[i].get_card_at_index(1)}"
+                    
+
+                    # Execute the UPDATE statement with the correct values
+                    cursor.execute('''
+                        UPDATE blackjack_statistics
+                        SET split_init_hand_1 = ?,
+                            split_init_type_1 = ?,
+                            split_decision_init_1 = ?,
+                            split_total_1 = ?,
+                            split_win_multiplier_1 = ?
+                        WHERE id = ?
+                    ''', (split_init_hand, handtype, initial_decision, init_total, win_multiplier, game_id))
+                    
+                    # Commit the transaction
+                    connection.commit()
+
+                if i == 1:
+                    # Combine the two cards into a single string
+                    split_init_hand = f"{player.hands[i].get_card_at_index(0)},{player.hands[i].get_card_at_index(1)}"
+                    
+                    # Execute the UPDATE statement with the correct values
+                    cursor.execute('''
+                        UPDATE blackjack_statistics
+                        SET split_init_hand_2 = ?,
+                            split_init_type_2 = ?,
+                            split_decision_init_2 = ?,
+                            split_total_2 = ?,
+                            split_win_multiplier_2 = ?
+                        WHERE id = ?
+                    ''', (split_init_hand, handtype, initial_decision, init_total, win_multiplier, game_id))
+                    
+                    # Commit the transaction
+                    connection.commit()
             
 
 
@@ -436,8 +483,8 @@ save_path = 'E:\\Programming\\bj\\Blackjack-Statistics\\3d_heatmap.png'
 interactive_path = 'E:\\Programming\\bj\\Blackjack-Statistics\\3d_heatmap.html'
 
 if __name__=='__main__':
-    blackjack_statistics(100,4)
-    fetch_and_plot_blackjack_statistics('blackjack_statistics', save_path, interactive_path)
+    blackjack_statistics(1000,4)
+    #fetch_and_plot_blackjack_statistics('blackjack_statistics', save_path, interactive_path)
 
 
 
