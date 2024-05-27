@@ -5,9 +5,9 @@ from basic_strategy import *
 import sqlite3
 import uuid
 import sqlite3
-import pandas as pd # type: ignore
-import plotly.graph_objs as go # type: ignore
-import plotly.express as px # type: ignore
+#import pandas as pd # type: ignore
+#import plotly.graph_objs as go # type: ignore
+#import plotly.express as px # type: ignore
 
 # connect to sql db to store games
 connection = sqlite3.connect('blackjack_statistics')
@@ -34,14 +34,18 @@ cursor.execute('''CREATE TABLE IF NOT EXISTS blackjack_statistics (
                     split_init_hand_1 TEXT,
                     split_init_type_1 TEXT,
                     split_decision_init_1 TEXT,
-                    split_total_1 TEXT,
+                    split_total_init_1 TEXT,
+                    split_total_final_1 TEXT,
+                    split_win_outcome_type_1 TEXT,
                     split_win_1 TEXT,
                     split_win_multiplier_1 FLOAT,
                
                     split_init_hand_2 TEXT,
                     split_init_type_2 TEXT,
                     split_decision_init_2 TEXT,
-                    split_total_2 TEXT,
+                    split_total_init_2 TEXT,
+                    split_total_final_2 TEXT,
+                    split_win_outcome_type_2 TEXT,
                     split_win_2 TEXT,
                     split_win_multiplier_2 FLOAT
                 )''')
@@ -60,6 +64,7 @@ def blackjack_statistics(iterations=1000, shoe_size=4):
 
     for i in range(iterations):
         game_id = str(uuid.uuid4())
+        splitting = 0
 
         # Insert just the game ID into the table
         cursor.execute('''INSERT INTO blackjack_statistics (id) VALUES (?)''', (game_id,))
@@ -148,11 +153,17 @@ def blackjack_statistics(iterations=1000, shoe_size=4):
 
         if initial_decision == 'P':
             # there can also technically be split blackjack wins
+            splitting = 1
 
             for i in range(len(player.hands)):
+
                 handtype = hand_type(player.hands[i])
                 init_total = player.hands[i].total_value()
                 initial_decision = initial_player_decision(player.hands[i],dealer,shoe,'N')
+
+                #if player.hands[i].get_card_at_index(0) == player.hands[i].get_card_at_index(1):
+                #   print(player.hands[i].get_card_at_index(0),player.hands[i].get_card_at_index(1))
+                #  print(handtype, init_total, initial_decision)
 
                 if initial_decision == 'H' and player.total_value() <= 21:
                     player_decision(player,dealer,shoe)
@@ -174,7 +185,7 @@ def blackjack_statistics(iterations=1000, shoe_size=4):
                         SET split_init_hand_1 = ?,
                             split_init_type_1 = ?,
                             split_decision_init_1 = ?,
-                            split_total_1 = ?,
+                            split_total_init_1 = ?,
                             split_win_multiplier_1 = ?
                         WHERE id = ?
                     ''', (split_init_hand, handtype, initial_decision, init_total, win_multiplier, game_id))
@@ -192,7 +203,7 @@ def blackjack_statistics(iterations=1000, shoe_size=4):
                         SET split_init_hand_2 = ?,
                             split_init_type_2 = ?,
                             split_decision_init_2 = ?,
-                            split_total_2 = ?,
+                            split_total_init_2 = ?,
                             split_win_multiplier_2 = ?
                         WHERE id = ?
                     ''', (split_init_hand, handtype, initial_decision, init_total, win_multiplier, game_id))
@@ -209,8 +220,10 @@ def blackjack_statistics(iterations=1000, shoe_size=4):
         # Now evaluate each hand's outcome
         for index, hand in enumerate(player.hands):
             ###print(f'Outcome for Hand #{index + 1}: {player.hands[index].display_hand(), player.hands[index].total_value()}')
+            hand_num = index + 1
 
-            evaluate_hand_outcome(player, dealer, game_id)
+            # hand was player before if anything is breaking
+            evaluate_hand_outcome(hand, dealer, game_id, splitting, hand_num)
 
     # cursor.execute('SELECT * FROM blackjack_statistics')
 
@@ -269,9 +282,21 @@ def initial_player_decision(player,dealer,shoe,splitting='Y'):
     shoe - the shoe that cards are being dealt from
     will return a decision, either H,S,D,P : Hit, stand, double, split.
     '''
+    if splitting == 'Y':
+        hand_type = initial_hand_type(player)
+        decision = basicStrategy(hand_type, player, dealer.show_upcard())
+    # this had to be added as hands were breaking
+    else:
+        handtype = n_split_hand_type(player)
+        decision = basicStrategy(handtype, player, dealer.show_upcard())
 
-    hand_type = initial_hand_type(player)
-    decision = basicStrategy(hand_type, player, dealer.show_upcard())
+
+    
+    # if type(player) is Hand and player.get_card_at_index(0) == player.get_card_at_index(1):
+    #     print(player.get_card_at_index(0), player.get_card_at_index(1))
+    #     print(handtype)
+    #     print(decision)
+    #     print(splitting)
 
     
     if decision == 'S':
@@ -356,6 +381,11 @@ def hand_type(playerHand,index=0):
     if playerHand.is_soft(index):
         return 'soft'
     return 'hard'
+
+def n_split_hand_type(playerHand):
+    if playerHand.is_soft():
+        return 'soft'
+    return 'hard'
     
 def dealer_turn(dealer,shoe):
     '''
@@ -376,7 +406,8 @@ def dealer_turn(dealer,shoe):
     # otherwise, the dealer value is between 17 and 21. dealer is staying
     return 'dstay'
 
-def evaluate_hand_outcome(player, dealer, game_id):
+def evaluate_hand_outcome(player, dealer, game_id, splitting=0, hand_num=0):
+    # added splitting and hand num so that SQL statements can be updated appropriately 
     player_total = player.total_value()
     dealer_total = dealer.total_value()
 
@@ -396,6 +427,30 @@ def evaluate_hand_outcome(player, dealer, game_id):
     else:
         outcome = 'push'
         game_win = 0
+
+    # handle splitting initial blackjack
+    if len(player) == 2 and splitting == 1 and player_total == 21:
+        #handling initial split blackjack
+        cursor.execute(f'''UPDATE blackjack_statistics
+                       SET split_total_final_{hand_num} = 21,
+                            split_win_outcome_type_{hand_num} = 'player_blackjack',
+                            split_win_{hand_num} = 1,
+                            split_win_multiplier_{hand_num} = 1.5,
+                            dealer_total = ?
+                       WHERE id = ?''', (dealer_total, game_id))
+        connection.commit()
+        return
+    
+    if splitting == 1:
+        # handling general split hands
+        cursor.execute(f'''UPDATE blackjack_statistics
+                       SET split_total_final_{hand_num} = ?,
+                            split_win_outcome_type_{hand_num} = ?,
+                            split_win_{hand_num} = ?,
+                            dealer_total = ?
+                       WHERE id = ?''', (player_total, outcome, game_win, dealer_total, game_id))
+        connection.commit()
+        return
 
     # Update database with outcome
     cursor.execute('''UPDATE blackjack_statistics

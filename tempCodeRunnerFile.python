@@ -1,1 +1,2 @@
-###
+hand_type = initial_hand_type(player)
+    

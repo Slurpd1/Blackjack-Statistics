@@ -109,6 +109,9 @@ class PlayerHand:
         self.hands = [Hand()]  # Initialize with a single empty hand
         self.num_of_splits = 0
 
+    def __len__(self):
+        return len(self.hands)
+
     def execute_split(self, shoe, index=0):
         if not self.can_split():
             print("Cannot split again.")
